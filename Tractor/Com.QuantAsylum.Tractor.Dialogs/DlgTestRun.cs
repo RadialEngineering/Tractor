@@ -166,6 +166,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                     for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
                     {
+                        if (Form1.AppSettings.TestList[i].RunTest == false)
+                        {
+                            dataGridView1[(int)ColText.PASSFAIL, i].Value = "Skipped";
+                            continue;
+                        }
+
                         if (Abort)
                         {
                             dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Aborted..."; });
@@ -435,7 +441,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 catch (Exception ex)
                 {
                     Log.WriteLine(LogType.Error, $"Failed to write line to CSV file. Filename: {fileName} Message: {ex.Message}");
-                    throw new InvalidOperationException("Unabled to write to CSV log file. Disable CSV logging to bypass.");
+                    throw new InvalidOperationException("Unable to write to CSV log file. Disable CSV logging to bypass.");
             }
         }
 

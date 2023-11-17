@@ -39,6 +39,8 @@ namespace Tractor
 
         static internal AppSettings AppSettings;
 
+        //public static string _testPath = "";
+
         public Form1()
         {
             Log.WriteLine($"Version {Constants.Version:0.000}. Application started...");
@@ -543,6 +545,11 @@ namespace Tractor
                 Tm.TestClass = Activator.CreateInstance(t);
                 AppSettingsDirty = false;
                 UpdateTitleBar();
+
+                // get path to the test loaded to use for a relative path for the mask files
+                //_testPath = Path.GetDirectoryName(fileName) + '\\';
+
+
             }
             catch (Exception ex)
             {

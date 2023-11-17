@@ -28,6 +28,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
         public bool FileNameCanBeEmpty = false;
 
+        public int IsSerial { get; set; } = 0; // 0 for no serial, 1 for in, 2 for out
+
+
         /// <summary>
         /// The indicated index must be LESS than the current index
         /// </summary>
@@ -56,6 +59,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
     public class ObjectEditor
     {
+
         bool _IsDirty = false;
 
         Button OkButton;
@@ -147,23 +151,47 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 else if (o is string)
                 {
                     string value = (string)fi.GetValue(ObjectToEdit);
-                    bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
-                    bool canBeEmpty = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty;
-                    TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left };
-                    tb.TextChanged += ValueChanged;
-                    Tlp.Controls.Add(tb, 1, row);
 
-                    if (isFileName)
+
+                    int isSerial = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsSerial;
+                    if (isSerial != 0)
                     {
-                        FileLoadButton b = new FileLoadButton() { Text = "Browse" };
-                        b.Click += BrowseFile;
-                        b.FileNameTextBox = tb;
-                        Tlp.Controls.Add(b, 2, row);
-
-                        if (canBeEmpty == false &&  File.Exists(tb.Text) == false)
+                        ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left };
+                        cmb.SelectedIndexChanged += IndexChanged;
+                        if (isSerial == 1)
                         {
-                            _IsDirty = true;
+                            string[] arr = { "TRS1", "TRS2", "RCA1", "RCA2", "3.5mm", "XLR" };
+                            cmb.Items.AddRange(arr);
                         }
+                        else
+                        {
+                            string[] arr = { "TRS", "RCA", "3.5mm", "XLR1", "XLR2" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        Tlp.Controls.Add(cmb, 1, row);
+                    }
+                    else
+                    {
+                        bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
+                        bool canBeEmpty = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty;
+                        TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left };
+                        tb.TextChanged += ValueChanged;
+                        Tlp.Controls.Add(tb, 1, row);
+                       
+
+                        if (isFileName)
+                        {
+                            FileLoadButton b = new FileLoadButton() { Text = "Browse" };
+                            b.Click += BrowseFile;
+                            b.FileNameTextBox = tb;
+                            Tlp.Controls.Add(b, 2, row);
+
+                            if (canBeEmpty == false && File.Exists(tb.Text) == false)
+                            {
+                                _IsDirty = true;
+                            }
+                        }
+
                     }
                 }
                 else if (o is bool)
@@ -206,7 +234,16 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 ValueChanged(null, null);
             }
         }
+        private void IndexChanged(object sender, EventArgs e)
+        {
+            NowEditingCallback?.Invoke();
+            OkButton.Enabled = true;
+            CancelButton.Enabled = true;
+            _IsDirty = true;
 
+            //ComboBox cmb = sender as ComboBox;
+            //cmb.Text = cmb.SelectedItem.ToString();
+        }
         private void ValueChanged(object sender, EventArgs e)
         {
             NowEditingCallback?.Invoke();

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZedGraph;
 
+
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
     class Histogram
