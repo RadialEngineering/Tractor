@@ -20,7 +20,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         //[ObjectEditorAttribute(Index = 220, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
         //public float ExternalAnalyzerInputGain = 0;
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Gain to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Gain to Pass (dB)", MinValue = -150, MaxValue = 100)]
         public float MinimumPassGain = -10.5f;
 
         [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Gain to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
