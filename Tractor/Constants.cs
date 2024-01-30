@@ -11,7 +11,7 @@ namespace Tractor
     {
         public static string TitleBarText = "QuantAsylum TRACTOR";
         public static readonly double Version = 1.101;
-        public static string VersionSuffix = "Radial 1.0";
+        public static string VersionSuffix = "Radial 1.1";
 
         public static double RequiredWebserviceVersion = 0.5;
         public static double RequiredQa401Version = 1.923;

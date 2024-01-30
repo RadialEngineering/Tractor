@@ -1,4 +1,7 @@
-﻿1.101
+﻿Radial 1.1
+-increased the size of promps and operator instructions texts to 512
+
+1.101
 - Fixed bug where QA40x supported input levels weren't being correctly used
 
 1.1
