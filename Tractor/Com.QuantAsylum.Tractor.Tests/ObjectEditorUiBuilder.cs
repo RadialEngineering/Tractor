@@ -82,10 +82,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
         }
 
         private void PopulateUi()
+
         {
+
+            //Tlp.Dock = DockStyle.Fill;
+
             Tlp.SuspendLayout();
 
             Tlp.AutoScroll = true;
+
+
+
 
             Type t = ObjectToEdit.GetType();
             FieldInfo[] f = t.GetFields();
@@ -96,7 +103,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             Tlp.ColumnStyles.Clear();
             Tlp.RowStyles.Clear();
             Tlp.ColumnCount = 4;  // COL0 = label, COL1 = data field, COL3 = button if needed, COL4 = error
+            // set column widths to match the window
+            Tlp.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            Tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70));
+
+            
             Tlp.RowCount = f.Length;
+
 
             int row = -1;
 
@@ -116,35 +129,35 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 if ((o is ObjectEditorSpacer) == false)
                 {
                     //var attr = fi.GetCustomAttribute<ObjectEditorAttribute>();
-                    Tlp.Controls.Add(new Label() { Text = fi.GetCustomAttribute<ObjectEditorAttribute>().DisplayText, Anchor = AnchorStyles.Right, AutoSize = true }, 0, row);
+                    Tlp.Controls.Add(new Label() { Text = fi.GetCustomAttribute<ObjectEditorAttribute>().DisplayText, Anchor = AnchorStyles.Right | AnchorStyles.Left, AutoSize = true }, 0, row);
                     Tlp.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 3, row);
                 }
 
                 if (o is int)
                 {
                     int value = (int)fi.GetValue(ObjectToEdit);
-                    TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
+                    TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = true };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
                 else if (o is AudioAnalyzerInputRanges)
                 {
                     AudioAnalyzerInputRanges value = (AudioAnalyzerInputRanges)fi.GetValue(ObjectToEdit);
-                    TextBox tb = new TextBox() { Text = value.InputRange.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
+                    TextBox tb = new TextBox() { Text = value.InputRange.ToString(), Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = true };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
                 else if (o is uint)
                 {
                     uint value = (uint)fi.GetValue(ObjectToEdit);
-                    TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
+                    TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = true };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
                 else if (o is double || o is float)
                 {
                     double value = (float)fi.GetValue(ObjectToEdit);
-                    TextBox tb = new TextBox() { Text = value.ToString(fi.GetCustomAttribute<ObjectEditorAttribute>().FormatString), Anchor = AnchorStyles.Left };
+                    TextBox tb = new TextBox() { Text = value.ToString(fi.GetCustomAttribute<ObjectEditorAttribute>().FormatString), Anchor = AnchorStyles.Left | AnchorStyles.Right };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
@@ -156,7 +169,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     int isSerial = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsSerial;
                     if (isSerial != 0)
                     {
-                        ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left };
+                        ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right };
                         cmb.SelectedIndexChanged += IndexChanged;
                         if (isSerial == 1)
                         {
@@ -174,7 +187,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     {
                         bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
                         bool canBeEmpty = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty;
-                        TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left };
+                        TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = false };
                         tb.TextChanged += ValueChanged;
                         Tlp.Controls.Add(tb, 1, row);
                        
@@ -197,13 +210,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 else if (o is bool)
                 {
                     bool value = (bool)fi.GetValue(ObjectToEdit);
-                    CheckBox tb = new CheckBox() { Checked = value, Anchor = AnchorStyles.Left };
+                    CheckBox tb = new CheckBox() { Checked = value, Anchor = AnchorStyles.Left | AnchorStyles.Right };
                     tb.CheckedChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
                 else if (o is ObjectEditorSpacer)
                 {
-                    Tlp.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
+                    Tlp.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = true }, 1, row);
                 }
             }
 
