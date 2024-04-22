@@ -1,6 +1,7 @@
 ﻿using Com.QuantAsylum.Tractor.Dialogs;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
@@ -38,7 +39,11 @@ namespace Com.QuantAsylum.Tractor.Tests
             {
                 if (BitmapFile.Trim() != "")
                 {
-                    bmp = new Bitmap(BitmapFile);
+                    // Get the absolute path of the bitmap file
+                    string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    string absolutePath = Path.Combine(appDirectory, BitmapFile);
+
+                    bmp = new Bitmap(absolutePath);
                 }
             }
             catch (Exception ex)

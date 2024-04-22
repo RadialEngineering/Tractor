@@ -1,5 +1,6 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
+using System.IO;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
@@ -37,6 +38,10 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             // Two channels
             tr = new TestResult(2);
 
+            // Get the absolute path of the mask file
+            string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string absolutePath = Path.Combine(appDirectory, MaskFileName);
+
             Tm.SetToDefaults();
             SetupBaseTests();
 
@@ -45,7 +50,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IAudioAnalyzer)Tm.TestClass).DoFrAquisition(AnalyzerOutputLevel, 0, SmoothingDenominator);
-            ((IAudioAnalyzer)Tm.TestClass).TestMask(MaskFileName, LeftChannel, RightChannel, false, out bool passLeft, out bool passRight, out _);
+            ((IAudioAnalyzer)Tm.TestClass).TestMask(absolutePath, LeftChannel, RightChannel, false, out bool passLeft, out bool passRight, out _);
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
