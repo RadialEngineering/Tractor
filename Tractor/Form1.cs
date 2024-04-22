@@ -59,6 +59,37 @@ namespace Tractor
             Tm = new TestManager();
             Type t = Type.GetType(AppSettings.TestClass);
             Tm.TestClass = Activator.CreateInstance(t);
+
+            // Enable drag and drop for this form
+            this.AllowDrop = true;
+
+            // Add event handlers for the DragEnter and DragDrop events
+            this.DragEnter += new DragEventHandler(Form1_DragEnter);
+            this.DragDrop += new DragEventHandler(Form1_DragDrop);
+        }
+
+        private void Form1_DragEnter(object sender, DragEventArgs e)
+        {
+            // Check if the data being dragged is a file
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy; // Show the copy cursor
+            else
+                e.Effect = DragDropEffects.None; // Show the no-drop cursor
+        }
+
+        private void Form1_DragDrop(object sender, DragEventArgs e)
+        {
+            // Get the files being dragged
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            // Load the first file in the list (if any)
+            if (files.Length > 0)
+            {
+                string filePath = files[0];
+                // Load your test plan from the file path
+                LoadFromFile(filePath);
+
+            }
         }
 
         /// <summary>
