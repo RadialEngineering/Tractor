@@ -14,7 +14,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [Serializable]
     public class PromptA00 : UiTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message", MaxLength = 512)]
         public string PromptMessage = "";
 
         [ObjectEditorAttribute(Index = 210, DisplayText = "Bitmap File Name", MaxLength = 512, IsFileName = true, FileNameCanBeEmpty = true)]
