@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
-    [Serializable]
+    [Serializable]                                                           // Dropdowns menu for inputs and outputs
     public class SerialSendXL : UiTestBase
     {
         [ObjectEditorAttribute(Index = 200, DisplayText = "Input Connector Select", MaxLength = 128, IsSerial = 3)]
@@ -22,118 +22,195 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 230, DisplayText = "Input Mode", MaxLength = 128, IsSerial = 6)]
         public string OutputModeSelect = "Balanced";
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "COM Port")]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "COM Port")]      // Declaring int creates an editable textbox
         public int COMPort = 7;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Baud Rate", MaxLength = 128, IsSerial = 7)]
         public string BaudR = "9600";
 
-        private SerialPort port;
+        private SerialPort port;                // Declare serial port
 
-        private bool feedback = false;
-        public SerialSendXL() : base()
+        public SerialSendXL() : base()          // Constructor to initialize base class
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
         }
 
+        private const int maxCOMRetries = 3;       // Max number of times program will attempt to open COM port before failing
+        private const int maxBoardCheckRetries = 5; // Max number of times program will attempt to check for missing boards before passing,
+                                                    // sometimes arduino sends leftover junk instead of the board config 
+
         public override void DoTest(string title, out TestResult tr)
         {
-            tr = new TestResult(2);
-            string COM = "COM" + COMPort;
-            int baud = CheckBaudRate();
-            try
+            tr = new TestResult(2);             // Test results and pass / fail condition
+
+                                                // Initalize serial port, throw an error and fail test if it can't open
+
+            if (!InitializeSerialPort("COM" + COMPort, CheckBaudRate(), out port))     
             {
-                port = new SerialPort(COM, baud);
-                port.NewLine = "\n";
-                port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                System.Threading.Thread.Sleep(20);
-                port.Open();
+                tr.StringValue[1] = $"Unable to open serial port {"COM" + COMPort}.";
+                tr.Pass = false;
+                return;
             }
-            catch (Exception ex)
+            
+            string current_mode = GetConfig(port);                      // Retrieve board configuration from arduino
+            
+            if (!CheckBoardsInstalled(current_mode, ref port, ref tr))  // Check if there are missing boards
+            {
+                tr.Pass = false;
+                return;                         // Exit early if board not installed
+            }
+
+            ConfigureRelays(port);              // Write commands to arduino to configure relays
+
+            if (port.IsOpen)                    // Close port if it is open
             {
                 port.Close();
-                port = new SerialPort(COM, baud);
-                port.NewLine = "\n";
-                port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                port.Open();
-            }
-            System.Threading.Thread.Sleep(500);
-
-
-
-            port.WriteLine("0");                        // Reset all relays
-            port.WriteLine(CheckInput());               // Enable input relay
-            port.WriteLine(CheckOutput());
-            port.WriteLine(CheckInputMode());           // Enable input mode relay
-            port.WriteLine(CheckOutputMode());          // Enable output mode relay
-
-            try
-            {
-                int input = int.Parse(CheckInput());                // This try catch block acts as a check if the user tries to set the ATPI XL
-                int output = int.Parse(CheckOutput());              // input or output to a channel that is not installed
-                Console.WriteLine(input);
-                Console.WriteLine(output);
-                port.WriteLine("getconfig");
-                string current_mode = port.ReadLine();
-                current_mode = current_mode.Trim();
-                Console.WriteLine(current_mode);
-                if (current_mode == "2" || current_mode == "0")
-                {
-                    if (input > 24 && input < 33)
-                    {
-                        Console.WriteLine("you tried to use an input on exp 1 and its not installed");
-                        port.Close();
-                        tr.Pass = false;
-                        return;
-                    }
-                    else if (output > 24 && output < 33)
-                    {
-                        Console.WriteLine("you tried to use an output on exp 1 and its not installed");
-                        port.Close();
-                        tr.Pass = false;
-                        return;
-                    }
-                }
-                else if (current_mode == "1" || current_mode == "0")
-                {
-                    if (input > 32 && input < 41)
-                    {
-                        Console.WriteLine("you tried to use an input on exp 2 and its not installed");
-                        port.Close();
-                        tr.Pass = false;
-                        return;
-                    }
-                    else if (output > 32 && output < 41)
-                    {
-                        Console.WriteLine("you tried to use an output on exp 2 and its not installed");
-                        port.Close();
-                        tr.Pass = false;
-                        return;
-                    }
-                }
-            }
-            catch (TimeoutException)
-            {
-                Console.WriteLine("Read timed out.");
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
             }
 
-
-            System.Threading.Thread.Sleep(20);
-            port.Close();
-
-
-            tr.Pass = true;
+            tr.Pass = true;                     // Set test to pass
 
         }
 
+        private void ConfigureRelays(SerialPort port)
+        {
+            port.WriteLine("0");                        // Reset all relays
+            port.WriteLine(CheckInput());               // Enable input relays
+            port.WriteLine(CheckOutput());              // Enable output relays
+            port.WriteLine(CheckInputMode());           // Enable input mode relays
+            port.WriteLine(CheckOutputMode());          // Enable output mode relays
+        }
 
-        // returns corresponding serial output char for selected input to send to ATPI
-        string CheckInput()
+        private bool InitializeSerialPort(string com, int baud, out SerialPort port)
+        {
+            port = new SerialPort(com, baud)
+            {
+                NewLine = "\n"
+            };
+            int retries = 0;
+            while (retries < maxCOMRetries)
+            {
+                try                         // Try to open port
+                {
+                    port.Open();
+                    Console.WriteLine($"Successfully opened port {com} at {baud} baud.");
+                    return true;            // Initialization succeeded
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    Console.WriteLine($"Port {com} is already in use. Error: {ex.Message}");
+                    break;                  // No point in retrying if port is in use
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"I/O error while accessing port {com}: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to open port {com} at {baud}: {ex.Message}");
+                }
+
+                retries++;
+                if (retries < maxCOMRetries)
+                {
+                    Console.WriteLine($"Retrying {retries}/{maxCOMRetries}...");
+                    System.Threading.Thread.Sleep(1000);            // Sleep before retrying
+                }
+            }
+
+                                // If it still fails, clean up and return false
+            port.Dispose();     // Cleanup port resources
+            port = null;
+            return false;       // Initialization failed after retries
+        }
+
+        // Check if inputs or outputs are routed to expansion boards not currently installed, throw an error if they do
+        private bool CheckBoardsInstalled(string currentMode, ref SerialPort port, ref TestResult tr)
+        {
+            int input = int.Parse(CheckInput());
+            int output = int.Parse(CheckOutput());
+
+            Console.WriteLine("Current Mode: "+currentMode+" Input: "+input+" Output"+output);
+
+            if (currentMode == "2" || currentMode == "0")  // Check for EXP 1
+            {
+                if ((input > 24 && input < 33) || (output > 24 && output < 33))
+                {
+                    port.Close();
+                    tr.StringValue[0] = "MISSING EXP 1";
+                    tr.Pass = false;
+                    return false; // Validation failed
+                }
+            }
+            if (currentMode == "1" || currentMode == "0")
+            {
+                if ((input > 32 && input < 41) || (output > 32 && output < 41))  // Check for EXP 2
+                {
+                    port.Close();
+                    tr.StringValue[1] = "MISSING EXP 2";
+                    tr.Pass = false;
+                    return false; // Validation failed
+                }
+            }
+
+            return true; // Validation passed
+        }
+
+        private string GetConfig(SerialPort port)
+        {
+            int retries = 0;
+
+            while (retries < maxBoardCheckRetries)
+            {
+                try
+                {
+                    if (!port.IsOpen)               // Open port if it is closed
+                    {
+                        port.Open();
+                    }
+
+                    port.WriteLine("getconfig");    // Write the "getconfig" command to the serial port
+
+                    port.ReadTimeout = 500;         // Timeout in milliseconds
+                                     
+                    string response = port.ReadLine().Trim();   // Read the response
+                    Console.WriteLine(response);
+                    if (response == "0" ||  response == "1" || response == "2" || response == "3")
+                    {
+                        return response;                // Return the successful response
+                    }
+                }
+                catch (TimeoutException)
+                {
+                    Console.WriteLine("Read timed out.");
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    Console.WriteLine($"Access to port failed: {ex.Message}");
+                    break;  // No point retrying if the issue is access-related
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"I/O error port: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error occurred port: {ex.Message}");
+                }
+
+                retries++;
+                if (retries < maxBoardCheckRetries)
+                {
+                    Console.WriteLine($"Retrying {retries}/{maxBoardCheckRetries}...");
+                }
+            }
+
+            // If it fails after retries, return board config corresponding to both boards being installed
+            Console.WriteLine("Failed to read response after retries.");
+            return "3";
+        }
+
+        string CheckInput()                     // returns corresponding serial command for selecting ATPI XL output
         {
             switch (InConnectorSelect)
             {
@@ -180,8 +257,8 @@ namespace Com.QuantAsylum.Tractor.Tests
             }
             return "0";
         }
-        // returns corresponding serial output char for selected output to send to ATPI
-        string CheckOutput()
+        
+        string CheckOutput()                // returns corresponding serial command for selecting ATPI XL output
         {
             switch (OutConnectorSelect)
             {
@@ -229,7 +306,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             return "0";
         }
 
-        string CheckInputMode()
+        string CheckInputMode()        // Return input mode command as string depending on dropdown menu selection
         {
             switch (InputModeSelect)
             {
@@ -245,7 +322,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             return "0";
         }
 
-        string CheckOutputMode()
+        string CheckOutputMode()        // Return output mode command as string depending on dropdown menu selection
         {
             switch (OutputModeSelect)
             {
@@ -261,13 +338,13 @@ namespace Com.QuantAsylum.Tractor.Tests
             return "0";
         }
 
-        int CheckBaudRate()
+        int CheckBaudRate()     // Return baud rate as integer depending on dropdown menu selection
         {
             switch (OutputModeSelect)
             {
                 case "4800":
                     return 4800;
-                case "9600 ATPI/XL":
+                case "9600 (ATPI/XL)":
                     return 9600;
                 case "14400":
                     return 14400;
@@ -282,22 +359,12 @@ namespace Com.QuantAsylum.Tractor.Tests
             }
             return 9600;
         }
-        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
-        {
-            SerialPort sp = (SerialPort)sender;
-            sp.ReadTimeout = 2000;
-            //sp.NewLine = "\n";
-            //string indata = sp.ReadLine();
-            string indata = sp.ReadExisting();
-            Console.WriteLine("Data Received:");
-            Console.Write(indata);
-            //feedback = true;
-        }
-        public override string GetTestDescription()
+
+        public override string GetTestDescription()     // Return test description message
         {
             return "Test designed for the ATPI XL that sets connection relays via Arduino. " +
-                "Use the Input/Output boxes to select desired signal paths, input COM port and baud rate of Arduino." +
-                " Default baud rate is for the ATPI XL is 9600.";
+                   "Use the Input/Output boxes to select desired signal paths, input COM port and baud rate of Arduino. " +
+                   "Default baud rate is for the ATPI XL is 9600.";
         }
     }
 }

@@ -203,7 +203,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         }
                         else if (isSerial == 7)
                         {
-                            string[] arr = { "4800", "9600 ATPI/XL", "14400", "28800", "38400", "57600", "115200" };
+                            string[] arr = { "4800", "9600 (ATPI/XL)", "14400", "28800", "38400", "57600", "115200" };
                             cmb.Items.AddRange(arr);
                         }
                         Tlp.Controls.Add(cmb, 1, row);
