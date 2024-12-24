@@ -176,9 +176,34 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             string[] arr = { "TRS1", "TRS2", "RCA1", "RCA2", "3.5mm", "XLR" };
                             cmb.Items.AddRange(arr);
                         }
-                        else
+                        else if (isSerial == 2)
                         {
                             string[] arr = { "TRS", "RCA", "3.5mm", "XLR1", "XLR2" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 3)
+                        {
+                            string[] arr = { "TRS1", "TRS2", "XLR1", "XLR2", "CH1A", "CH2A", "CH3A", "CH4A", "CH1B", "CH2B", "CH3B", "CH4B", "EXP1 CH1", "EXP1 CH2", "EXP1 CH3", "EXP1 CH4", "EXP2 CH1", "EXP2 CH2", "EXP2 CH3", "EXP2 CH4" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 4)
+                        {
+                            string[] arr = { "TRS1", "TRS2", "XLR1", "XLR2", "CH1A", "CH2A", "CH3A", "CH4A", "CH1B", "CH2B", "CH3B", "CH4B", "EXP1 CH1", "EXP1 CH2", "EXP1 CH3", "EXP1 CH4", "EXP2 CH1", "EXP2 CH2", "EXP2 CH3", "EXP2 CH4" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 5)
+                        {
+                            string[] arr = { "Balanced", "Unbalanced", "Stereo", "Stereo Option" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 6)
+                        {
+                            string[] arr = { "Balanced", "Unbalanced", "Stereo", "Stereo Option" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 7)
+                        {
+                            string[] arr = { "4800", "9600 ATPI/XL", "14400", "28800", "38400", "57600", "115200" };
                             cmb.Items.AddRange(arr);
                         }
                         Tlp.Controls.Add(cmb, 1, row);
