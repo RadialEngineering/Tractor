@@ -47,6 +47,20 @@ namespace Com.QuantAsylum.Hardware
             Qa401.DoAcquisition();
         }
 
+        public PointD[] getPhase(int channel)
+        {
+            return null;
+        }
+        public PointD[] GetData(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetTimeData(int channel)
+        {
+            return null;
+        }
+
         public void DoFrAquisition(float ampLevl_dBV, double windowSec, int smoothingDenominator)
         {
             Qa401.DoFrAquisition(ampLevl_dBV, windowSec, smoothingDenominator);

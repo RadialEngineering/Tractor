@@ -31,7 +31,23 @@ namespace Com.QuantAsylum.Hardware
             };
         }
 
-        public void AudioAnalyzerSetTitle(string s)
+        public PointD[] getPhase(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetData(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetTimeData(int channel)
+        {
+            return null;
+        }
+
+
+            public void AudioAnalyzerSetTitle(string s)
         {
             return;
         }

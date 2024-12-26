@@ -15,6 +15,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Runtime.Serialization.Formatters;
 using System.Collections;
+using PointD = Com.QuantAsylum.Tractor.TestManagers.PointD;
+//using ChannelType = Com.QuantAsylum.QA401.ChannelType;
 
 namespace Com.QuantAsylum.Hardware
 {
@@ -233,27 +235,58 @@ namespace Com.QuantAsylum.Hardware
             Qa401.AuditionStop();
         }
 
-        //public PointD[] GetData(ChannelEnum channel)
-        //{
-        //    QuantAsylum.QA401.PointD[] dataIn;
-        //    PointD[] dataOut;
+        public PointD[] getPhase(int channel)
+        {
 
-        //    switch (channel)
-        //    {
-        //        case ChannelEnum.Left:
-        //            dataIn = Qa401.GetData(ChannelType.LeftIn);
-        //            break;
-        //        case ChannelEnum.Right:
-        //            dataIn = Qa401.GetData(ChannelType.RightIn);
-        //            break;
-        //        default:
-        //            throw new ArgumentException("Invalid arguement in GetData()");
-        //    }
+            QuantAsylum.QA401.ChannelType channelType = (QuantAsylum.QA401.ChannelType)channel;
 
-        //    dataOut = new PointD[dataIn.Length];
+            QuantAsylum.QA401.PointD[] dataIn = Qa401.GetPhaseDeg(channelType);
 
-        //    return dataOut = MarshallToPointD(dataIn);
-        //}
+            // cast dataIn to PointD
+            PointD[] dataOut = new PointD[dataIn.Length];
+
+            for (int i = 0; i < dataOut.Length; i++)
+            {
+                dataOut[i] = new PointD { X = dataIn[i].X, Y = dataIn[i].Y };
+            }
+
+            return dataOut;
+        
+        }
+
+        public PointD[] GetData(int channel)
+        {
+            QuantAsylum.QA401.ChannelType channelType = (QuantAsylum.QA401.ChannelType)channel;
+
+            QuantAsylum.QA401.PointD[] dataIn = Qa401.GetData(channelType);
+
+            // cast dataIn to PointD
+            PointD[] dataOut = new PointD[dataIn.Length];
+
+            for (int i = 0; i < dataOut.Length; i++)
+            {
+                dataOut[i] = new PointD { X = dataIn[i].X, Y = dataIn[i].Y };
+            }
+
+            return dataOut;
+        }
+
+        public PointD[] GetTimeData(int channel)
+        {
+            QuantAsylum.QA401.ChannelType channelType = (QuantAsylum.QA401.ChannelType)channel;
+
+            QuantAsylum.QA401.PointD[] dataIn = Qa401.GetTimeData(channelType);
+
+            // cast dataIn to PointD
+            PointD[] dataOut = new PointD[dataIn.Length];
+
+            for (int i = 0; i < dataOut.Length; i++)
+            {
+                dataOut[i] = new PointD { X = dataIn[i].X, Y = dataIn[i].Y };
+            }
+
+            return dataOut;
+        }
 
         public Bitmap GetBitmap()
         {

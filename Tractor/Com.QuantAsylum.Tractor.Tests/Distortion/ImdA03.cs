@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Com.QuantAsylum.Tractor.TestManagers;
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 

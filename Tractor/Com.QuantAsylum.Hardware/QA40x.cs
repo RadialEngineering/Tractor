@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.IO;
 using Tractor;
+using Tractor.Com.QuantAsylum.Hardware;
 
 namespace Com.QuantAsylum.Hardware
 {
@@ -258,6 +259,21 @@ namespace Com.QuantAsylum.Hardware
         public void SetToDefaults()
         {
             PutSync("/Settings/Default");
+        }
+
+        public PointD[] getPhase(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetData(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetTimeData(int channel)
+        {
+            return null;
         }
 
         /*******************************************************************/

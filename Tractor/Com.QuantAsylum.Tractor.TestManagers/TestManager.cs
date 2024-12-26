@@ -7,6 +7,12 @@ using Tractor;
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
     public enum ChannelEnum { Left, Right};
+    public enum ChannelType {
+        LeftIn,
+        RightIn,
+        LeftOut,
+        RightOut
+    };
 
     /// <summary>
     /// Data returned from some equipment is an array of Points (for example, amplitude and frequency)
