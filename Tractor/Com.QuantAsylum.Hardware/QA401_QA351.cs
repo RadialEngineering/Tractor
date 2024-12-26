@@ -61,6 +61,11 @@ namespace Com.QuantAsylum.Hardware
             return null;
         }
 
+        public double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq)
+        {
+            return 0;
+        }
+
         public void DoFrAquisition(float ampLevl_dBV, double windowSec, int smoothingDenominator)
         {
             Qa401.DoFrAquisition(ampLevl_dBV, windowSec, smoothingDenominator);

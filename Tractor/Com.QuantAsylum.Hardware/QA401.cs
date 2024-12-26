@@ -288,6 +288,19 @@ namespace Com.QuantAsylum.Hardware
             return dataOut;
         }
 
+        public double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq)
+        {
+            QuantAsylum.QA401.ChannelType channelTypeRef = (QuantAsylum.QA401.ChannelType)reference;
+
+            QuantAsylum.QA401.PointD[] dataInRef = Qa401.GetTimeData(channelTypeRef);
+
+            QuantAsylum.QA401.ChannelType channelTypeSig = (QuantAsylum.QA401.ChannelType)signal;
+
+            QuantAsylum.QA401.PointD[] dataInSig = Qa401.GetTimeData(channelTypeSig);
+
+            return Qa401.ComputePhase(dataInRef, dataInSig, applyCompensation, compensationFreq);
+        }
+
         public Bitmap GetBitmap()
         {
             byte[] imgArray = Qa401.GetBitmapBytes();

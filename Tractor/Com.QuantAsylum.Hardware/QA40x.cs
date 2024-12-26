@@ -276,6 +276,11 @@ namespace Com.QuantAsylum.Hardware
             return null;
         }
 
+        public double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq)
+        {
+            return 0;
+        }
+
         /*******************************************************************/
         /*********************** HELPERS for REST **************************/
         /*******************************************************************/

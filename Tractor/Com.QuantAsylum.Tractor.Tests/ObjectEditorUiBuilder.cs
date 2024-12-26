@@ -30,6 +30,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
         public int IsSerial { get; set; } = 0; // 0 for no serial, 1 for in, 2 for out
 
+        public int IsPhase { get; set; } = 0; // 0 for no phase, 1 for left reference, 2 for right reference
+
 
         /// <summary>
         /// The indicated index must be LESS than the current index
@@ -167,6 +169,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
 
                     int isSerial = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsSerial;
+                    int isPhase = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsPhase;
+
                     if (isSerial != 0)
                     {
                         ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right };
@@ -179,6 +183,22 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         else
                         {
                             string[] arr = { "TRS", "RCA", "3.5mm", "XLR1", "XLR2" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        Tlp.Controls.Add(cmb, 1, row);
+                    }
+                    else if (fi.GetCustomAttribute<ObjectEditorAttribute>().IsPhase != 0)
+                    {
+                        ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right };
+                        cmb.SelectedIndexChanged += IndexChanged;
+                        if (isPhase == 1)
+                        {
+                            string[] arr = { "Left QA Output", "Right QA Input" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else
+                        {
+                            string[] arr = { "Right QA Output", "Left QA Input" };
                             cmb.Items.AddRange(arr);
                         }
                         Tlp.Controls.Add(cmb, 1, row);
