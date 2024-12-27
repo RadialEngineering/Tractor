@@ -4,6 +4,7 @@ using System;
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using System.Linq;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -11,12 +12,12 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will check the phase against a reference signal
     /// </summary>
     [Serializable]
-    public class PhaseA01 : PhaseTestBase
+    public class PhaseA03 : PhaseTestBase
     {
         [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size (k)", MustBePowerOfTwo = true, MinValue = 2, MaxValue = 64)]
         public uint FftSize = 8;
 
-        [ObjectEditorAttribute(Index = 102, DisplayText = "Retry Count")]
+        [ObjectEditorAttribute(Index = 100, DisplayText = "Retry Count")]
         public int RetryCount = 2;
 
         [ObjectEditorAttribute(Index = 104, DisplayText = "Measure Left Channel")]
@@ -55,7 +56,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
         public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
-        public PhaseA01() : base()
+        public PhaseA03() : base()
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
@@ -103,83 +104,41 @@ namespace Com.QuantAsylum.Tractor.Tests
 
             ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
+            {
+                float current = ((ICurrentMeter)Tm.TestClass).GetDutCurrent();
+                Log.WriteLine(LogType.General, "Current: " + current);
+            }
+
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             bool passLeft = true, passRight = true;
 
-            //Console.WriteLine("Checking phase");
-
-            //PointD[] leftInTime = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(0);
-            //PointD[] rightInTime = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(1);
-            //PointD[] leftOutTime = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(2);
-            //PointD[] rightOutTime = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(3);
-
-            //int peakIndexIn = 0;
-            //int peakIndexOut = 0;
-            //double phaseSum = 0;
-            //double phaseAcc = 0;
-            //const int avg = 25;
-
-            //// calculate phase average for Left Channel Out with Left Input Reference
-            //for (int sumNum = 0; sumNum < avg; sumNum++)
-            //{
-            //    // find peak index for leftInTime 
-            //    for (int i = 500 + peakIndexOut; i < leftInTime.Length; i++)
-            //    {
-            //        if (leftInTime[i].Y > leftInTime[i - 1].Y && leftInTime[i].Y > leftInTime[i + 1].Y)
-            //        {
-            //            peakIndexIn = i;
-            //            break;
-            //        }
-            //    }
-
-            //    // find peak index for leftOutTime
-            //    for (int j = 500 + peakIndexOut; j < leftOutTime.Length; j++)
-            //    {
-            //        if (leftOutTime[j].Y > leftOutTime[j - 1].Y && leftOutTime[j].Y > leftOutTime[j + 1].Y)
-            //        {
-            //            peakIndexOut = j;
-            //            break;
-            //        }
-            //    }
-
-            //    double timeDiff = Math.Abs(leftOutTime[peakIndexOut].X - leftInTime[peakIndexIn].X);
-
-            //    phaseAcc = (timeDiff * TestFrequency * 360) % 360;
-
-            //    Console.WriteLine("Phase diff: " + phaseAcc);
-
-            //    phaseSum += phaseAcc;
-            //}
-
-            //double phaseLeft = phaseSum / avg;
-
-            //// adjust phaseLeft to be between -180 and 180 to mimic QA401 software reading
-            //if (phaseLeft >180)
-            //    phaseLeft -= 360;
-            //else if (phaseLeft < -180)
-            //    phaseLeft += 360;
-
-            //Console.WriteLine("Phase diff: " + phaseLeft);
-
-            //tr.Value[0] = phaseLeft;
-            //tr.StringValue[0] = tr.Value[0].ToString("0.00") + " deg";
-
-            //if (phaseLeft < MinimumPhase || phaseLeft > MaximumPhase)
-            //    passLeft = false;
+            double sampleRate;
 
             if (LeftChannel) 
             {
-            // calculate phase for Left Channel Out with Left Input Reference
-            double phaseLeft = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(LeftReference == "Left QA Output" ? leftOut : rightIn, leftIn, true, TestFrequency);
+                // calculate phase for Left Channel Out with Left Input Reference
+                PointD[] timeDataLeftIn = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(leftIn);
+                PointD[] timeDataLeftOut = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(LeftReference == "Left QA Output"?leftOut:rightIn);
 
-            //Console.WriteLine("Left Phase: " + phaseLeft);
+                sampleRate = timeDataLeftIn[1].X - timeDataLeftIn[0].X;
 
-            tr.Value[0] = phaseLeft;
-            tr.StringValue[0] = tr.Value[0].ToString("0.00") + " deg";
+                double[] yValues1 = ExtractYValues(timeDataLeftIn);
+                double[] yValues2 = ExtractYValues(timeDataLeftOut);
 
-            if (phaseLeft < MinimumPhase || phaseLeft > MaximumPhase)
-                passLeft = false;
+                double[] crossCorrelation = CrossCorrelate(yValues1, yValues2);
+                int maxIndex = FindMaxIndex(crossCorrelation);
+
+                int lag = maxIndex - (yValues1.Length - 1);
+                double leftPhase = CalculatePhaseDifference(lag, sampleRate, TestFrequency, LeftReference == "Left QA Output" ? true : false);
+
+                tr.StringValue[0] = leftPhase.ToString("0.0") + " deg";
+
+                if (leftPhase < MinimumPhase || leftPhase > MaximumPhase)
+                {
+                    passLeft = false;
+                }
             }
             else
             {
@@ -189,15 +148,27 @@ namespace Com.QuantAsylum.Tractor.Tests
             if (RightChannel)
             {
                 // calculate phase for Right Channel Out with Right Input Reference
-                double phaseRight = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(RightReference == "Right QA Output" ? rightOut : leftIn, rightIn, true, TestFrequency);
+                PointD[] timeDataRightIn = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(rightIn);
+                PointD[] timeDataRightOut = ((IAudioAnalyzer)Tm.TestClass).GetTimeData(RightReference == "Right QA Output" ? rightOut : leftIn);
 
-                //Console.WriteLine("Right Phase: " + phaseRight);
+                sampleRate = timeDataRightIn[1].X - timeDataRightIn[0].X;
 
-                tr.Value[1] = phaseRight;
-                tr.StringValue[1] = tr.Value[1].ToString("0.00") + " deg";
+                double[] yValues1 = ExtractYValues(timeDataRightIn);
+                double[] yValues2 = ExtractYValues(timeDataRightOut);
 
-                if (phaseRight < MinimumPhase || phaseRight > MaximumPhase)
+                double[] crossCorrelation = CrossCorrelate(yValues1, yValues2);
+                int maxIndex = FindMaxIndex(crossCorrelation);
+
+                int lag = maxIndex - (yValues1.Length - 1);
+                double rightPhase = CalculatePhaseDifference(lag, sampleRate, TestFrequency, RightReference == "Right QA Output" ? true : false);
+
+                tr.StringValue[1] = rightPhase.ToString("0.0") + " deg";
+
+                if (rightPhase < MinimumPhase || rightPhase > MaximumPhase)
+                {
                     passRight = false;
+                }
+
             }
             else
             {
@@ -211,6 +182,69 @@ namespace Com.QuantAsylum.Tractor.Tests
                 tr.Pass = passLeft;
             else if (RightChannel)
                 tr.Pass = passRight;
+        }
+
+        public static double[] ExtractYValues(PointD[] points)
+        {
+            return points.Select(p => p.Y).ToArray();
+        }
+
+        public static double[] CrossCorrelate(double[] signal1, double[] signal2)
+        {
+            int length = signal1.Length + signal2.Length - 1;
+            double[] result = new double[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                double sum = 0;
+                for (int j = 0; j < signal1.Length; j++)
+                {
+                    int k = i - j;
+                    if (k >= 0 && k < signal2.Length)
+                    {
+                        sum += signal1[j] * signal2[k];
+                    }
+                    //else break;
+                }
+                result[i] = sum;
+            }
+
+            return result;
+        }
+
+        public static int FindMaxIndex(double[] array)
+        {
+            int maxIndex = 0;
+            double maxValue = array[0];
+
+            for (int i = 1; i < array.Length; i++)
+            {
+                if (array[i] > maxValue)
+                {
+                    maxValue = array[i];
+                    maxIndex = i;
+                }
+            }
+
+            return maxIndex;
+        }
+
+        public static double CalculatePhaseDifference(int lag, double samplingRate, double frequency, bool offset)
+        {
+            double offsetVal = offset ? 2.08402E-05 : 0.0;
+            double timeDifference = lag * samplingRate - offsetVal;
+            double phaseDifference = (timeDifference * frequency * 360) % 360;
+
+            if (phaseDifference > 180)
+            {
+                phaseDifference -= 360;
+            }
+            else if (phaseDifference < -180)
+            {
+                phaseDifference += 360;
+            }
+
+            return phaseDifference;
         }
     }
 }

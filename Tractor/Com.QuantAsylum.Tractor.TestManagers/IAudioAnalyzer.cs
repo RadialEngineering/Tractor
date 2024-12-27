@@ -46,6 +46,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         void AuditionSetVolume(double volume);
         void AuditionStop();
 
+        PointD[] GetTimeData(int channel);
+
         double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq);
 
         Bitmap GetBitmap();

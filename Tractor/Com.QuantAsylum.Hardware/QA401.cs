@@ -183,8 +183,6 @@ namespace Com.QuantAsylum.Hardware
             }
         }
 
-       
-
         public void DoAcquisition()
         {
             Qa401.RunSingle();

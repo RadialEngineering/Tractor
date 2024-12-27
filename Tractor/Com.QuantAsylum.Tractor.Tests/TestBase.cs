@@ -85,6 +85,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(MicCompareA01))]
     [System.Xml.Serialization.XmlInclude(typeof(VoltageA80))]
     [System.Xml.Serialization.XmlInclude(typeof(PhaseA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(PhaseA03))]
 
 
     //

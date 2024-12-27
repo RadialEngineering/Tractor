@@ -12,6 +12,7 @@ using System.Web.Script.Serialization;
 using System.IO;
 using Tractor;
 using Tractor.Com.QuantAsylum.Hardware;
+using System.Collections;
 
 namespace Com.QuantAsylum.Hardware
 {
@@ -159,7 +160,7 @@ namespace Com.QuantAsylum.Hardware
         {
             try
             {
-                if(Convert.ToBoolean(GetSync("/Status/Connection", "Value")))
+                if (Convert.ToBoolean(GetSync("/Status/Connection", "Value")))
                 {
                     if (Convert.ToDouble(GetSync("/Status/Version", "Value")) >= Constants.RequiredQa40xVersion)
                     {
@@ -220,7 +221,7 @@ namespace Com.QuantAsylum.Hardware
             passMath = false;
             //maskFile = Path.GetFileName(maskFile);
             maskFile = WebUtility.UrlEncode(maskFile);
-            Dictionary<string, object> d =  GetSync($"/MaskTest/{maskFile}/{testL}/{testR}");
+            Dictionary<string, object> d = GetSync($"/MaskTest/{maskFile}/{testL}/{testR}");
 
             passLeft = Convert.ToBoolean(d["PassLeft"]);
             passRight = Convert.ToBoolean(d["PassRight"]);
@@ -273,12 +274,75 @@ namespace Com.QuantAsylum.Hardware
 
         public PointD[] GetTimeData(int channel)
         {
-            return null;
+            Dictionary<string, object> dataRaw;
+            byte[] binaryData;
+            String chanLR, inOut;
+
+            switch (channel)
+            {
+                case 0:
+                    chanLR = "Left";
+                    inOut = "Input";
+                    break;
+                case 2:
+                    chanLR = "Left";
+                    inOut = "Output";
+                    break;
+                case 1:
+                    chanLR = "Right";
+                    inOut = "Input";
+                    break;
+                case 3:
+                    chanLR = "Right";
+                    inOut = "Output";
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid channel in QA40x.cs GetTimeData()");
+            }
+
+            // get the raw json data
+            dataRaw = GetSync($"/Data/Time/{inOut}");
+
+            // extract the binary data and convert from base64
+            binaryData = Convert.FromBase64String(Convert.ToString(dataRaw[chanLR]));
+
+            // extract the time difference between samples
+            double timeDiff = Convert.ToDouble(dataRaw["Dx"]);
+
+            int numDoubles = binaryData.Length / 8;
+            PointD[] points = new PointD[numDoubles];
+
+            for (int i = 0; i < numDoubles; i++)
+            {
+                points[i] = new PointD(); // Instantiate the PointD object
+                points[i].X = (double)i * timeDiff;
+                points[i].Y = BitConverter.ToDouble(binaryData, i * 8);
+            }
+
+            return points;
         }
 
         public double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq)
         {
-            return 0;
+            Dictionary<string, object> inputRaw = GetSync($"/Data/Time/Input");
+            Dictionary<string, object> outputRaw = GetSync($"/Data/Time/Output");
+
+            byte[] binaryDataInLeft = Convert.FromBase64String(Convert.ToString(inputRaw["Left"]));
+
+            int numDoubles = binaryDataInLeft.Length / 8;
+            double[] doubles = new double[numDoubles];
+
+            for (int i = 0; i < numDoubles; i++)
+            {
+                doubles[i] = BitConverter.ToDouble(binaryDataInLeft, i * 8);
+            }
+
+
+            if (signal == 0)
+                return Convert.ToDouble(inputRaw["Left"]);
+            else
+                return Convert.ToDouble(outputRaw["Right"]);
+
         }
 
         /*******************************************************************/
