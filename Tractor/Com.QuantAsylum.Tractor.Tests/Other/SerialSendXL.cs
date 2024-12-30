@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
-    [Serializable]                                                           // Dropdowns menu for inputs and outputs
+    [Serializable]                                                           // Dropdown menus for inputs and outputs
     public class SerialSendXL : UiTestBase
     {
         [ObjectEditorAttribute(Index = 200, DisplayText = "Input Connector Select", MaxLength = 128, IsSerial = 3)]
@@ -36,8 +36,8 @@ namespace Com.QuantAsylum.Tractor.Tests
             _TestType = TestTypeEnum.Other;
         }
 
-        private const int maxCOMRetries = 3;       // Max number of times program will attempt to open COM port before failing
-        private const int maxBoardCheckRetries = 5; // Max number of times program will attempt to check for missing boards before passing,
+        private const int maxCOMRetries = 3;        // Max number of times program will attempt to open COM port before failing
+        private const int maxBoardCheckRetries = 5; // Max number of times program will attempt to check for missing boards,
                                                     // sometimes arduino sends leftover junk instead of the board config 
 
         public override void DoTest(string title, out TestResult tr)
@@ -53,9 +53,7 @@ namespace Com.QuantAsylum.Tractor.Tests
                 return;
             }
             
-            string current_mode = GetConfig(port);                      // Retrieve board configuration from arduino
-            
-            if (!CheckBoardsInstalled(current_mode, ref port, ref tr))  // Check if there are missing boards
+            if (!CheckBoardsInstalled(GetConfig(port), ref port, ref tr))  // Check if there are missing boards
             {
                 tr.Pass = false;
                 return;                         // Exit early if board not installed
@@ -186,16 +184,16 @@ namespace Com.QuantAsylum.Tractor.Tests
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    Console.WriteLine($"Access to port failed: {ex.Message}");
+                    Console.WriteLine($"Access failed: {ex.Message}");
                     break;  // No point retrying if the issue is access-related
                 }
                 catch (IOException ex)
                 {
-                    Console.WriteLine($"I/O error port: {ex.Message}");
+                    Console.WriteLine($"I/O error: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error occurred port: {ex.Message}");
+                    Console.WriteLine($"Error occurred: {ex.Message}");
                 }
 
                 retries++;
@@ -340,7 +338,7 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         int CheckBaudRate()     // Return baud rate as integer depending on dropdown menu selection
         {
-            switch (OutputModeSelect)
+            switch (BaudR)
             {
                 case "4800":
                     return 4800;

@@ -30,6 +30,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
         public int IsSerial { get; set; } = 0; // 0 for no serial, 1 for in, 2 for out
 
+        public bool IsDataField {  get; set; } = false;
+
 
         /// <summary>
         /// The indicated index must be LESS than the current index
@@ -164,7 +166,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 else if (o is string)
                 {
                     string value = (string)fi.GetValue(ObjectToEdit);
-
+                    
+                   
 
                     int isSerial = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsSerial;
                     if (isSerial != 0)
@@ -210,26 +213,48 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     }
                     else
                     {
+
                         bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
                         bool canBeEmpty = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty;
-                        TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = false };
-                        tb.TextChanged += ValueChanged;
-                        Tlp.Controls.Add(tb, 1, row);
-                       
+                        bool isDataField = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsDataField;
 
-                        if (isFileName)
+                        if (isDataField)
                         {
-                            FileLoadButton b = new FileLoadButton() { Text = "Browse" };
-                            b.Click += BrowseFile;
-                            b.FileNameTextBox = tb;
-                            Tlp.Controls.Add(b, 2, row);
-
-                            if (canBeEmpty == false && File.Exists(tb.Text) == false)
+                            TextBox tb = new TextBox()
                             {
-                                _IsDirty = true;
-                            }
+                                Text = value,
+                                Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom,
+                                Multiline = true, 
+                                Height = 150, 
+                                ScrollBars = ScrollBars.Vertical, 
+                                AutoSize = false
+                            };
+                            tb.TextChanged += ValueChanged; 
+                            Tlp.Controls.Add(tb, 1, row); 
                         }
 
+                        else
+                        {
+                            TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = false };
+                            tb.TextChanged += ValueChanged;
+                            Tlp.Controls.Add(tb, 1, row);
+
+
+                            if (isFileName)
+                            {
+                                FileLoadButton b = new FileLoadButton() { Text = "Browse" };
+                                b.Click += BrowseFile;
+                                b.FileNameTextBox = tb;
+                                Tlp.Controls.Add(b, 2, row);
+
+                                if (canBeEmpty == false && File.Exists(tb.Text) == false)
+                                {
+                                    _IsDirty = true;
+                                }
+                            }
+
+
+                        }
                     }
                 }
                 else if (o is bool)
