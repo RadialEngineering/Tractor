@@ -119,7 +119,7 @@ namespace Com.QuantAsylum.Tractor.Tests
  
         //}
 
-        internal bool RunTest { get; set; } = true;
+        public bool RunTest { get; set; } = true;
 
         /// <summary>
         /// Returns the user-assigned name for the test. This name must be unique among

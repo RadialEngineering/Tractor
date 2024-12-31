@@ -116,6 +116,12 @@ namespace Tractor
                 // Remove the dragged node from its current location
                 draggedNode.Remove();
 
+                // remove the dragged test from the test list
+                int index = AppSettings.TestList.FindIndex(o => o.Name == GetTestName(draggedNode.Text));
+                TestBase draggedTest = AppSettings.TestList[index];
+                AppSettings.TestList.RemoveAt(index);
+                
+
                 // Determine the drop position
                 TreeNode parentNode = targetNode.Parent;
                 if (parentNode == null)
@@ -126,11 +132,17 @@ namespace Tractor
                     {
                         // Insert above the target node
                         treeView.Nodes.Insert(targetIndex, draggedNode);
+
+                        // insert the dragged test above the target test
+                        AppSettings.TestList.Insert(targetIndex, draggedTest);
                     }
                     else
                     {
                         // Insert below the target node
                         treeView.Nodes.Insert(targetIndex + 1, draggedNode);
+
+                        // insert the dragged test below the target test
+                        AppSettings.TestList.Insert(targetIndex + 1, draggedTest);
                     }
                 }
                 else

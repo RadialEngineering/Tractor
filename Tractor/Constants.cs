@@ -10,7 +10,7 @@ namespace Tractor
     static class Constants 
     {
         public static string TitleBarText = "QuantAsylum TRACTOR RAD";
-        public static readonly double Version = 1.201;
+        public static readonly double Version = 1.202;
         public static string VersionSuffix = "";
 
         public static double RequiredWebserviceVersion = 0.5;
