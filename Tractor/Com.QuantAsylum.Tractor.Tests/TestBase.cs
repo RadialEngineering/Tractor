@@ -86,7 +86,9 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(VoltageA80))]
     [System.Xml.Serialization.XmlInclude(typeof(PhaseA01))]
     [System.Xml.Serialization.XmlInclude(typeof(PhaseA03))]
-
+    [System.Xml.Serialization.XmlInclude(typeof(SumGainA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(SplitGainA01))] 
+    [System.Xml.Serialization.XmlInclude(typeof(GainSelectA01))]
 
     //
     // Naming Convention for classes:
@@ -241,6 +243,32 @@ namespace Com.QuantAsylum.Tractor.Tests
 
     public class PhaseTestBase : TestBase
     {
+
+    }
+
+    public class SumSplitBase : TestBase
+    {
+        [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size (k)", MustBePowerOfTwo = true, MinValue = 2, MaxValue = 64)]
+        public uint FftSize = 8;
+
+        [ObjectEditorAttribute(Index = 102, DisplayText = "Retry Count")]
+        public int RetryCount = 2;
+
+        [ObjectEditorAttribute(Index = 110, DisplayText = "Display Y Max", MinValue = -200, MaxValue = 200, MustBeGreaterThanIndex = 120)]
+        public int YMax = 10;
+
+        [ObjectEditorAttribute(Index = 120, DisplayText = "Display Y Min", MinValue = -200, MaxValue = 200)]
+        public int YMin = -180;
+
+        [ObjectEditorAttribute(Index = 130, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
+        public int PreAnalyzerInputGain = 0;
+
+        public void SetupBaseTests()
+        {
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
+        }
 
     }
 
