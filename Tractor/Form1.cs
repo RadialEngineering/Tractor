@@ -62,10 +62,108 @@ namespace Tractor
 
             // Enable drag and drop for this form
             this.AllowDrop = true;
+            treeView1.AllowDrop = true;
 
             // Add event handlers for the DragEnter and DragDrop events
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
+
+            // Add event handlers for the DragEnter and DragDrop events
+            treeView1.ItemDrag += new ItemDragEventHandler(treeView1_ItemDrag);
+            treeView1.DragEnter += new DragEventHandler(treeView1_DragEnter);
+            treeView1.DragOver += new DragEventHandler(treeView1_DragOver);
+            treeView1.DragDrop += new DragEventHandler(treeView1_DragDrop);
+        }
+
+        private void treeView1_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private void treeView1_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void treeView1_DragOver(object sender, DragEventArgs e)
+        {
+            // Get the TreeView control
+            TreeView treeView = sender as TreeView;
+
+            // Get the node at the current mouse position
+            Point targetPoint = treeView.PointToClient(new Point(e.X, e.Y));
+            TreeNode targetNode = treeView.GetNodeAt(targetPoint);
+
+            // Select the node under the mouse pointer
+            treeView.SelectedNode = targetNode;
+        }
+
+        private void treeView1_DragDrop(object sender, DragEventArgs e)
+        {
+            // Get the TreeView control
+            TreeView treeView = sender as TreeView;
+
+            // Get the node being dragged
+            TreeNode draggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
+
+            // Get the target node
+            Point targetPoint = treeView.PointToClient(new Point(e.X, e.Y));
+            TreeNode targetNode = treeView.GetNodeAt(targetPoint);
+
+            // Ensure the dragged node is not dropped on itself
+            if (draggedNode != targetNode && targetNode != null)
+            {
+                // Remove the dragged node from its current location
+                draggedNode.Remove();
+
+                // remove the dragged test from the test list
+                int index = AppSettings.TestList.FindIndex(o => o.Name == GetTestName(draggedNode.Text));
+                TestBase draggedTest = AppSettings.TestList[index];
+                AppSettings.TestList.RemoveAt(index);
+                
+
+                // Determine the drop position
+                TreeNode parentNode = targetNode.Parent;
+                if (parentNode == null)
+                {
+                    // Dropped at the root level
+                    int targetIndex = treeView.Nodes.IndexOf(targetNode);
+                    if (targetPoint.Y < targetNode.Bounds.Top + (targetNode.Bounds.Height / 2))
+                    {
+                        // Insert above the target node
+                        treeView.Nodes.Insert(targetIndex, draggedNode);
+
+                        // insert the dragged test above the target test
+                        AppSettings.TestList.Insert(targetIndex, draggedTest);
+                    }
+                    else
+                    {
+                        // Insert below the target node
+                        treeView.Nodes.Insert(targetIndex + 1, draggedNode);
+
+                        // insert the dragged test below the target test
+                        AppSettings.TestList.Insert(targetIndex + 1, draggedTest);
+                    }
+                }
+                else
+                {
+                    // Dropped within a parent node
+                    int targetIndex = parentNode.Nodes.IndexOf(targetNode);
+                    if (targetPoint.Y < targetNode.Bounds.Top + (targetNode.Bounds.Height / 2))
+                    {
+                        // Insert above the target node
+                        parentNode.Nodes.Insert(targetIndex, draggedNode);
+                    }
+                    else
+                    {
+                        // Insert below the target node
+                        parentNode.Nodes.Insert(targetIndex + 1, draggedNode);
+                    }
+                }
+
+                // Expand the target node to show the dropped node
+                targetNode.Expand();
+            }
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)

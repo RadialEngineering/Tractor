@@ -32,6 +32,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
         public bool IsDataField {  get; set; } = false;
 
+        public int IsPhase { get; set; } = 0; // 0 for no phase, 1 for left reference, 2 for right reference
+
+        public bool IsRadio { get; set; } = false; // false for no radio buttons, true for radio button
+
+
 
         /// <summary>
         /// The indicated index must be LESS than the current index
@@ -152,6 +157,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 else if (o is uint)
                 {
                     uint value = (uint)fi.GetValue(ObjectToEdit);
+
                     TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = true };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
@@ -170,6 +176,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                    
 
                     int isSerial = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsSerial;
+                    int isPhase = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsPhase;
+                    bool IsRadio = fi.GetCustomAttribute<ObjectEditorAttribute>().IsRadio;
+
                     if (isSerial != 0)
                     {
                         ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right };
@@ -210,6 +219,62 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             cmb.Items.AddRange(arr);
                         }
                         Tlp.Controls.Add(cmb, 1, row);
+                    }
+                    else if (fi.GetCustomAttribute<ObjectEditorAttribute>().IsPhase != 0)
+                    {
+                        ComboBox cmb = new ComboBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right };
+                        cmb.SelectedIndexChanged += IndexChanged;
+                        if (isPhase == 1)
+                        {
+                            string[] arr = { "Left QA Output", "Right QA Input" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else
+                        {
+                            string[] arr = { "Right QA Output", "Left QA Input" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        Tlp.Controls.Add(cmb, 1, row);
+                    }
+                    else if (IsRadio)
+                    {
+                        var panel = new FlowLayoutPanel();
+                        panel.AutoSize = true;
+
+                        // Create radio buttons
+                        var radioButton1 = new RadioButton
+                        {
+                            Text = "Left",
+                            Tag = fi.Name
+                        };
+
+                        var radioButton2 = new RadioButton
+                        {
+                            Text = "Right",
+                            Tag = fi.Name
+                        };
+
+                        //Initialize radio button state
+                        var currentValue = fi.GetValue(ObjectToEdit) as string;
+                        if (currentValue == radioButton1.Text)
+                        {
+                            radioButton1.Checked = true;
+                        }
+                        else if (currentValue == radioButton2.Text)
+                        {
+                            radioButton2.Checked = true;
+                        }
+
+                        radioButton1.CheckedChanged += RadioButton_CheckedChanged;
+                        radioButton2.CheckedChanged += RadioButton_CheckedChanged;
+
+                        // Add radio buttons to the panel
+                        panel.Controls.Add(radioButton1);
+                        panel.Controls.Add(radioButton2);
+
+                        // Add the panel to the TableLayoutPanel (Tlp)
+                        Tlp.Controls.Add(panel, 1, row);
+
                     }
                     else
                     {
@@ -313,6 +378,26 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             OkButton.Enabled = true;
             CancelButton.Enabled = true;
             _IsDirty = true;
+        }
+
+        private void RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton != null && radioButton.Checked)
+            {
+                var fieldName = radioButton.Tag as string;
+                var field = ObjectToEdit.GetType().GetField(fieldName);
+                if (field != null)
+                {
+                    
+                    NowEditingCallback?.Invoke();
+                    OkButton.Enabled = true;
+                    CancelButton.Enabled = true;
+                    _IsDirty = true;
+                    //field.SetValue(ObjectToEdit, radioButton.Text);
+                }
+            }
+
         }
 
         private void BrowseFile(object sender, EventArgs e)
@@ -604,8 +689,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         {
                             if (commit)
                             {
+                                // if the object is a radio button, set the value to the selected radio button
+                                if (f[i].GetCustomAttribute<ObjectEditorAttribute>().IsRadio)
+                                {
+                                    var panel = Tlp.GetControlFromPosition(1, i) as FlowLayoutPanel;
+                                    var radioButton = panel.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
+                                    f[i].SetValue(ObjectToEdit, radioButton.Text);
+                                }
+                                else { 
                                 string s = Tlp.GetControlFromPosition(1, i).Text.Trim();
                                 f[i].SetValue(ObjectToEdit, s.Substring(0, Math.Min(s.Length, f[i].GetCustomAttribute<ObjectEditorAttribute>().MaxLength)));
+                                }
                             }
 
                             Tlp.GetControlFromPosition(3, i).Text = errMsg;

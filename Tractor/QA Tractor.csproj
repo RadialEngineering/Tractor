@@ -162,6 +162,9 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Distortion\ThdNA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA03.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSelectA01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\SplitGainA01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\SumGainA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted5A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted3A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ObjectEditorUiBuilder.cs" />
@@ -173,6 +176,8 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MicCompareA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MidiSendXL.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\SerialSendXL.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PhaseA03.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PhaseA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\SerialSend.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\VoltageA80.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PowerA14.cs" />
