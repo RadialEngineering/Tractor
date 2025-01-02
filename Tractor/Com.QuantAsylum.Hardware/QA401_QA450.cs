@@ -66,6 +66,26 @@ namespace Com.QuantAsylum.Hardware
             throw new NotImplementedException();
         }
 
+        public PointD[] getPhase(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetData(int channel)
+        {
+            return null;
+        }
+
+        public PointD[] GetTimeData(int channel)
+        {
+            return null;
+        }
+
+        public double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq)
+        {
+            return 0;
+        }
+
         public void SetSupplyState(bool powerEnable)
         {
             Qa450.SetSupplyState(powerEnable);

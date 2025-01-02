@@ -40,11 +40,15 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         bool LRVerifyPhase(int bufferOffset);
 
+        PointD[] getPhase(int channel);
+
         void AuditionStart(string fileName, double volume, bool repeat);
         void AuditionSetVolume(double volume);
         void AuditionStop();
 
-        //PointD[] GetData(ChannelEnum channel);
+        PointD[] GetTimeData(int channel);
+
+        double ComputePhase(int reference, int signal, bool applyCompensation, double compensationFreq);
 
         Bitmap GetBitmap();
     }

@@ -84,6 +84,10 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(ThdNA01))]
     [System.Xml.Serialization.XmlInclude(typeof(MicCompareA01))]
     [System.Xml.Serialization.XmlInclude(typeof(VoltageA80))]
+    [System.Xml.Serialization.XmlInclude(typeof(PhaseA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(PhaseA03))]
+
+
     //
     // Naming Convention for classes:
     // Class names are as follows, and each must be unique
@@ -115,7 +119,7 @@ namespace Com.QuantAsylum.Tractor.Tests
  
         //}
 
-        internal bool RunTest { get; set; } = true;
+        public bool RunTest { get; set; } = true;
 
         /// <summary>
         /// Returns the user-assigned name for the test. This name must be unique among
@@ -231,6 +235,11 @@ namespace Com.QuantAsylum.Tractor.Tests
     }
 
     public class UiTestBase : TestBase
+    {
+
+    }
+
+    public class PhaseTestBase : TestBase
     {
 
     }
