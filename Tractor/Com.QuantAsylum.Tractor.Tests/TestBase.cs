@@ -72,6 +72,8 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(ThdB03))]
     [System.Xml.Serialization.XmlInclude(typeof(PromptA00))]
     [System.Xml.Serialization.XmlInclude(typeof(SerialSend))]
+    [System.Xml.Serialization.XmlInclude(typeof(MidiSendXL))]
+    [System.Xml.Serialization.XmlInclude(typeof(SerialSendXL))]
     [System.Xml.Serialization.XmlInclude(typeof(ImpedanceA03))]
     [System.Xml.Serialization.XmlInclude(typeof(PowerA14))]
     [System.Xml.Serialization.XmlInclude(typeof(EfficiencyA07))]

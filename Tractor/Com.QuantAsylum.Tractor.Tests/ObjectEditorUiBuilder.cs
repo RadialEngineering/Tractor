@@ -30,9 +30,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
         public int IsSerial { get; set; } = 0; // 0 for no serial, 1 for in, 2 for out
 
+        public bool IsDataField {  get; set; } = false;
+
         public int IsPhase { get; set; } = 0; // 0 for no phase, 1 for left reference, 2 for right reference
 
         public bool IsRadio { get; set; } = false; // false for no radio buttons, true for radio button
+
 
 
         /// <summary>
@@ -169,7 +172,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 else if (o is string)
                 {
                     string value = (string)fi.GetValue(ObjectToEdit);
-
+                    
+                   
 
                     int isSerial = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsSerial;
                     int isPhase = (int)fi.GetCustomAttribute<ObjectEditorAttribute>().IsPhase;
@@ -184,9 +188,34 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             string[] arr = { "TRS1", "TRS2", "RCA1", "RCA2", "3.5mm", "XLR" };
                             cmb.Items.AddRange(arr);
                         }
-                        else
+                        else if (isSerial == 2)
                         {
                             string[] arr = { "TRS", "RCA", "3.5mm", "XLR1", "XLR2" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 3)
+                        {
+                            string[] arr = { "TRS1", "TRS2", "XLR1", "XLR2", "CH1A", "CH2A", "CH3A", "CH4A", "CH1B", "CH2B", "CH3B", "CH4B", "EXP1 CH1", "EXP1 CH2", "EXP1 CH3", "EXP1 CH4", "EXP2 CH1", "EXP2 CH2", "EXP2 CH3", "EXP2 CH4" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 4)
+                        {
+                            string[] arr = { "TRS1", "TRS2", "XLR1", "XLR2", "CH1A", "CH2A", "CH3A", "CH4A", "CH1B", "CH2B", "CH3B", "CH4B", "EXP1 CH1", "EXP1 CH2", "EXP1 CH3", "EXP1 CH4", "EXP2 CH1", "EXP2 CH2", "EXP2 CH3", "EXP2 CH4" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 5)
+                        {
+                            string[] arr = { "Balanced", "Unbalanced", "Stereo", "Stereo Option" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 6)
+                        {
+                            string[] arr = { "Balanced", "Unbalanced", "Stereo", "Stereo Option" };
+                            cmb.Items.AddRange(arr);
+                        }
+                        else if (isSerial == 7)
+                        {
+                            string[] arr = { "4800", "9600 (ATPI/XL)", "14400", "28800", "38400", "57600", "115200" };
                             cmb.Items.AddRange(arr);
                         }
                         Tlp.Controls.Add(cmb, 1, row);
@@ -249,26 +278,48 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     }
                     else
                     {
+
                         bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
                         bool canBeEmpty = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty;
-                        TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = false };
-                        tb.TextChanged += ValueChanged;
-                        Tlp.Controls.Add(tb, 1, row);
-                       
+                        bool isDataField = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsDataField;
 
-                        if (isFileName)
+                        if (isDataField)
                         {
-                            FileLoadButton b = new FileLoadButton() { Text = "Browse" };
-                            b.Click += BrowseFile;
-                            b.FileNameTextBox = tb;
-                            Tlp.Controls.Add(b, 2, row);
-
-                            if (canBeEmpty == false && File.Exists(tb.Text) == false)
+                            TextBox tb = new TextBox()
                             {
-                                _IsDirty = true;
-                            }
+                                Text = value,
+                                Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom,
+                                Multiline = true, 
+                                Height = 150, 
+                                ScrollBars = ScrollBars.Vertical, 
+                                AutoSize = false
+                            };
+                            tb.TextChanged += ValueChanged; 
+                            Tlp.Controls.Add(tb, 1, row); 
                         }
 
+                        else
+                        {
+                            TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left | AnchorStyles.Right, AutoSize = false };
+                            tb.TextChanged += ValueChanged;
+                            Tlp.Controls.Add(tb, 1, row);
+
+
+                            if (isFileName)
+                            {
+                                FileLoadButton b = new FileLoadButton() { Text = "Browse" };
+                                b.Click += BrowseFile;
+                                b.FileNameTextBox = tb;
+                                Tlp.Controls.Add(b, 2, row);
+
+                                if (canBeEmpty == false && File.Exists(tb.Text) == false)
+                                {
+                                    _IsDirty = true;
+                                }
+                            }
+
+
+                        }
                     }
                 }
                 else if (o is bool)
