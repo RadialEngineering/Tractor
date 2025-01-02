@@ -13,6 +13,13 @@ measurements:
 
 # Changelog
 
+## 1.300
+* Added MidiXL test for ATPI XL
+* Added SerialSend test for ATPI XL
+* Added SumGain test for testing L/R summing into one input
+* Added SplitGain test for testing L/R splitting into 2 outputs
+* Added GainSelect test for selecting the R or L channel
+
 ## 1.202
 * Added test drag and drop functionality for easier reordering of test plans
 * Added save state functionality for test enable/disable checkboxes
