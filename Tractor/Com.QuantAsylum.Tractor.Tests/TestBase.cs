@@ -92,6 +92,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(SplitGainA01))]
     [System.Xml.Serialization.XmlInclude(typeof(GainSelectA01))]
     [System.Xml.Serialization.XmlInclude(typeof(LRBalanceA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(PotBalSweep))]
 
     //
     // Naming Convention for classes:

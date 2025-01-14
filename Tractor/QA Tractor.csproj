@@ -173,6 +173,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\RmsLevelA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Operator\AuditionA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\EfficiencyA07.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PotBalSweepA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\LRBalanceA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MicCompareA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MidiSendXL.cs" />

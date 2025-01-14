@@ -9,7 +9,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
     /// This test will check the gain
     /// </summary>
     [Serializable]
-    public class LRBalanceA01 : UiTestBase
+    public class PotBalSweep : UiTestBase
     {
         [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size (k)", MustBePowerOfTwo = true, MinValue = 2, MaxValue = 64)]
         public uint FftSize = 8;
@@ -44,7 +44,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
         public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
-        public LRBalanceA01() : base()
+        public PotBalSweep() : base()
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
@@ -69,29 +69,21 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
 
-            bool passLeft = true;
+            bool passLeft = true, passRight = true;
 
-            //for (int i = 0; i < 25; i++)
-            //{
-            //    ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
-            //    ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
-            //    tr.Value[0] = tr.Value[1] - tr.Value[0];
-            //    if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
-            //    {
-            //        passLeft = false;
-            //        break;
-            //    }
-            //}
-
-            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
-
-            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
-            ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
-            tr.Value[0] = tr.Value[1] - tr.Value[0];
-
+            for (int i = 0; i < 25; i++)
+            {
+                ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
+                ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
+                tr.Value[0] = tr.Value[1] - tr.Value[0];
+                if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
+                {
+                    passLeft = false;
+                    break;
+                }
+            }
+            
             tr.StringValue[0] = tr.Value[0].ToString("0.00") + " dB";
-            if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
-                passLeft = false;
 
             tr.StringValue[1] = "SKIP";
 
@@ -107,7 +99,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Measures the gain differential between the Left and Right Channels, using the Right Channel as reference. Results must be within a given window to pass.";
+            return "Repeatedly measures the gain differential between the Left and Right Channels as the operator slowly sweeps the potentiometer. Results must be within a given window to pass.";
         }
 
         public override bool IsRunnable()
