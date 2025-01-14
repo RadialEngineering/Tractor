@@ -44,13 +44,14 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
         public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
+        [ObjectEditorAttribute(Index = 260, DisplayText = "Number of Measurements ", MinValue = 1, MaxValue = 50)]
+        public int NumMeasurements = 1;
+
         public LRBalanceA01() : base()
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
         }
-
-       
 
         public override void DoTest(string title, out TestResult tr)
         {
@@ -70,28 +71,23 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
 
             bool passLeft = true;
+            tr.StringValue[1] = "SKIP";
 
-            //for (int i = 0; i < 25; i++)
-            //{
-            //    ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
-            //    ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
-            //    tr.Value[0] = tr.Value[1] - tr.Value[0];
-            //    if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
-            //    {
-            //        passLeft = false;
-            //        break;
-            //    }
-            //}
+            for (int i = 0; i < NumMeasurements; i++)
+            {
+                ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
+                ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
+                tr.Value[0] = tr.Value[1] - tr.Value[0];
+                if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
+                {
+                    passLeft = false;
+                    break;
+                }
+            }
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
-            ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
-            tr.Value[0] = tr.Value[1] - tr.Value[0];
-
             tr.StringValue[0] = tr.Value[0].ToString("0.00") + " dB";
-            if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
-                passLeft = false;
 
             tr.StringValue[1] = "SKIP";
 
