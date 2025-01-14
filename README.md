@@ -13,6 +13,9 @@ measurements:
 
 # Changelog
 
+## 1.310
+* Added LRBalanceA01 test for measuring gain differential between L and R. Can do multiple acquisitions to enable potentiometer sweeps.
+
 ## 1.300
 * Added MidiXL test for ATPI XL
 * Added SerialSend test for ATPI XL
