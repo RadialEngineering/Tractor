@@ -13,6 +13,9 @@ measurements:
 
 # Changelog
 
+## 1.320
+* Added PhaseTest180A01 to measure 180 degree invert functionality on a DUT. The test will prompt to engage the phase flip during the test and compare between the 2 measured values to get a more consistent differential phase reading.
+
 ## 1.310
 * Added LRBalanceA01 test for measuring gain differential between L and R. Can do multiple acquisitions to enable potentiometer sweeps.
 
