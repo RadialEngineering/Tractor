@@ -176,6 +176,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\LRBalanceA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MicCompareA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MidiSendXL.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PhaseTest180A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\SerialSendXL.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PhaseA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PhaseA01.cs" />

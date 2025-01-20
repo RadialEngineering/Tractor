@@ -13,7 +13,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will check the phase against a reference signal
     /// </summary>
     [Serializable]
-    public class PhaseA01 : PhaseTestBase
+    public class PhaseTest180A01 : PhaseTestBase
     {
         [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size (k)", MustBePowerOfTwo = true, MinValue = 2, MaxValue = 64)]
         public uint FftSize = 8;
@@ -48,16 +48,19 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float AnalyzerOutputLevel = -30;
 
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Prompt Message", MaxLength = 512)]
+        public string PromptMessage = "";
+
         [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Phase to Pass (deg)", MinValue = -180, MaxValue = 360)]
-        public float MinimumPhase = -10.5f;
+        public float MinimumPhase = 175f;
 
         [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Phase to Pass (deg)", MinValue = -180, MaxValue = 360, MustBeGreaterThanIndex = 230)]
-        public float MaximumPhase = -9.5f;
+        public float MaximumPhase = 185f;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
         public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
-        public PhaseA01() : base()
+        public PhaseTest180A01() : base()
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
@@ -91,6 +94,9 @@ namespace Com.QuantAsylum.Tractor.Tests
             const int leftOut = 2;
             const int rightOut = 3;
 
+            double[] phaseLeft = new double[2];
+            double[] phaseRight = new double[2];
+
             tr = new TestResult(2);
             Tm.SetToDefaults();
 
@@ -103,47 +109,73 @@ namespace Com.QuantAsylum.Tractor.Tests
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
 
-            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
-
-            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
-
             bool passLeft = true, passRight = true;
 
-            if (LeftChannel) 
+            // measure phase twice with prompt in between
+            for (int i = 0;i < 2; i++)
             {
-            // calculate phase for Left Channel Out with Left Input Reference
-            double phaseLeft = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(LeftReference == "Left QA Output" ? leftOut : rightIn, leftIn, true, TestFrequency);
+                ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
+                TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            //Console.WriteLine("Left Phase: " + phaseLeft);
+                if (LeftChannel)
+                {
+                    // calculate phase for Left Channel Out with Left Input Reference
+                    phaseLeft[i] = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(LeftReference == "Left QA Output" ? leftOut : rightIn, leftIn, true, TestFrequency);
 
-            tr.Value[0] = phaseLeft;
-            tr.StringValue[0] = tr.Value[0].ToString("0.00") + " deg";
+                    //Console.WriteLine("Left Phase: " + phaseLeft);
 
-            if (phaseLeft < MinimumPhase || phaseLeft > MaximumPhase)
-                passLeft = false;
+
+
+                    //if (phaseLeft < MinimumPhase || phaseLeft > MaximumPhase)
+                    //    passLeft = false;
+                }
+                else
+                {
+                    tr.StringValue[0] = "SKIP";
+                }
+
+                if (RightChannel)
+                {
+                    // calculate phase for Right Channel Out with Right Input Reference
+                    phaseRight[i] = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(RightReference == "Right QA Output" ? rightOut : leftIn, rightIn, true, TestFrequency);
+
+                    //Console.WriteLine("Right Phase: " + phaseRight);
+
+                    //tr.Value[1] = phaseRight;
+                    //tr.StringValue[1] = tr.Value[1].ToString("0.00") + " deg";
+
+                    //if (phaseRight < MinimumPhase || phaseRight > MaximumPhase)
+                    //    passRight = false;
+                }
+                else
+                {
+                    tr.StringValue[1] = "SKIP";
+                }
+
+                if (i == 0)
+                {
+                    ShowPrompt(PromptMessage, false, null);
+                }
+                    
             }
-            else
+
+            if (LeftChannel)
             {
-                tr.StringValue[0] = "SKIP";
+                tr.Value[0] = Math.Abs(phaseLeft[1] - phaseLeft[0]);
+                tr.StringValue[0] = tr.Value[0].ToString("0.00") + " deg";
+
+                if (tr.Value[0] < MinimumPhase || tr.Value[0] > MaximumPhase)
+                    passLeft = false;
             }
 
             if (RightChannel)
             {
-                // calculate phase for Right Channel Out with Right Input Reference
-                double phaseRight = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(RightReference == "Right QA Output" ? rightOut : leftIn, rightIn, true, TestFrequency);
-
-                //Console.WriteLine("Right Phase: " + phaseRight);
-
-                tr.Value[1] = phaseRight;
+                tr.Value[1] = Math.Abs(phaseRight[1] - phaseRight[0]);
                 tr.StringValue[1] = tr.Value[1].ToString("0.00") + " deg";
 
-                if (phaseRight < MinimumPhase || phaseRight > MaximumPhase)
+                if (tr.Value[1] < MinimumPhase || tr.Value[1] > MaximumPhase)
                     passRight = false;
             }
-            else
-            {
-                tr.StringValue[1] = "SKIP";
-            }   
 
 
             if (LeftChannel && RightChannel)
@@ -152,6 +184,14 @@ namespace Com.QuantAsylum.Tractor.Tests
                 tr.Pass = passLeft;
             else if (RightChannel)
                 tr.Pass = passRight;
+        }
+
+        void ShowPrompt(string instruction, bool showFailButton, Bitmap image)
+        {
+            using (var prompt = new DlgPrompt(instruction, showFailButton, image))
+            {
+                prompt.ShowDialog();
+            }
         }
     }
 }
