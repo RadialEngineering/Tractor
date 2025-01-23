@@ -24,14 +24,14 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 104, DisplayText = "Measure Left Channel")]
         public bool LeftChannel = true;
 
-        [ObjectEditorAttribute(Index = 105, DisplayText = "Left Reference", MaxLength = 128, IsPhase = 1)]
-        public string LeftReference = "Left QA Output";
+        //[ObjectEditorAttribute(Index = 105, DisplayText = "Left Reference", MaxLength = 128, IsPhase = 1)]
+        //public string LeftReference = "Left QA Output";
 
         [ObjectEditorAttribute(Index = 106, DisplayText = "Measure Right Channel")]
         public bool RightChannel = true;
 
-        [ObjectEditorAttribute(Index = 108, DisplayText = "Right Reference", MaxLength = 128, IsPhase = 2)]
-        public string RightReference = "Right QA Output";
+        //[ObjectEditorAttribute(Index = 108, DisplayText = "Right Reference", MaxLength = 128, IsPhase = 2)]
+        //public string RightReference = "Right QA Output";
 
         //[ObjectEditorAttribute(Index = 110, DisplayText = "Display Y Max", MinValue = -200, MaxValue = 200, MustBeGreaterThanIndex = 120)]
         //public int YMax = 10;
@@ -69,7 +69,8 @@ namespace Com.QuantAsylum.Tractor.Tests
         public override string GetTestDescription()
         {
             return "Measures the phase at a specified frequency and amplitude and compares to a chosen reference. Results must be within a given window to pass." +
-                "Phase values using QA Output as reference reflect the values shown in the QA401 software.";
+                "Phase values using QA Output as reference reflect the values shown in the QA401 software. This test prompts the user after taking a reference measurement to engage " +
+                "a phase invert switch then measures again to calculate the difference.";
         }
 
         public override string GetTestLimits()
@@ -120,7 +121,7 @@ namespace Com.QuantAsylum.Tractor.Tests
                 if (LeftChannel)
                 {
                     // calculate phase for Left Channel Out with Left Input Reference
-                    phaseLeft[i] = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(LeftReference == "Left QA Output" ? leftOut : rightIn, leftIn, true, TestFrequency);
+                    phaseLeft[i] = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(leftOut, leftIn, true, TestFrequency);
 
                     //Console.WriteLine("Left Phase: " + phaseLeft);
 
@@ -137,7 +138,7 @@ namespace Com.QuantAsylum.Tractor.Tests
                 if (RightChannel)
                 {
                     // calculate phase for Right Channel Out with Right Input Reference
-                    phaseRight[i] = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(RightReference == "Right QA Output" ? rightOut : leftIn, rightIn, true, TestFrequency);
+                    phaseRight[i] = ((IAudioAnalyzer)Tm.TestClass).ComputePhase(rightOut, rightIn, true, TestFrequency);
 
                     //Console.WriteLine("Right Phase: " + phaseRight);
 

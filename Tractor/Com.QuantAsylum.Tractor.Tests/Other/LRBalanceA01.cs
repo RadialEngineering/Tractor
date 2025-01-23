@@ -103,7 +103,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Measures the gain differential between the Left and Right Channels, using the Right Channel as reference. Results must be within a given window to pass.";
+            return "Measures the gain differential between the Left and Right Channels, using the Right Channel as reference. Results must be within a given window to pass." +
+                "Use the \"Number of Measurements\" input to perform multiple acquisitions for doing potentiometer sweeps.";
         }
 
         public override bool IsRunnable()
