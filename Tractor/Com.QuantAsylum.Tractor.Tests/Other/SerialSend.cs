@@ -18,7 +18,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         public string OutConnectorSelect = "";
 
         [ObjectEditorAttribute(Index = 220, DisplayText = "COM Port")]
-        public int COMPort = 4;
+        public int COMPort = 6;
 
         [ObjectEditorAttribute(Index = 230, DisplayText = "Baud Rate", ValidInts = new int[] { 4800, 9600, 14400, 38400, 28800, 57600, 115200 })]
         public int BaudR = 9600;

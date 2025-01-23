@@ -85,6 +85,23 @@ namespace Tractor
             e.Effect = DragDropEffects.Move;
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.S))
+            {
+                // Call the save method
+                SaveTestPlan();
+                return true; // Indicate that the key press was handled
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void SaveTestPlan()
+        {
+            // Your save logic here
+            saveTestPlanToolStripMenuItem_Click(this, EventArgs.Empty);
+        }
+
         private void treeView1_DragOver(object sender, DragEventArgs e)
         {
             // Get the TreeView control
