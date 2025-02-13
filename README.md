@@ -13,6 +13,16 @@ measurements:
 
 # Changelog
 
+## 1.322
+* Improved Serial port implementation to reduce crashes
+* added retries to serial com test
+* added echo error checking for ATPI communication
+
+## 1.321
+* Added "ctrl+s" functionality for saving tests
+* Cleaned up some test descriptions
+* Changed some default test values to be more in line with the proper ranges
+
 ## 1.320
 * Added PhaseTest180A01 to measure 180 degree invert functionality on a DUT. The test will prompt to engage the phase flip during the test and compare between the 2 measured values to get a more consistent differential phase reading.
 
