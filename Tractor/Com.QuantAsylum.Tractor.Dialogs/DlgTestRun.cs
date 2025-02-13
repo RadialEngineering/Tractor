@@ -214,6 +214,24 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                                     break;
                             }
                         }
+                        else if (Form1.AppSettings.TestList[i] is SerialSend)
+                        {
+                            for (int j = 0; j < 5; j++)
+                            {
+                                if (j > 0)
+                                {
+                                    dataGridView1.Invoke((MethodInvoker)delegate
+                                    {
+                                        dataGridView1[(int)ColText.PASSFAIL, i].Value = "Retry: " + j.ToString();
+                                    });
+                                }
+
+                                Form1.AppSettings.TestList[i].DoTest(Form1.AppSettings.TestList[i].Name, out tr);
+
+                                if (tr.Pass)
+                                    break;
+                            }
+                        }
                         else
                         {
                             Form1.AppSettings.TestList[i].DoTest(Form1.AppSettings.TestList[i].Name, out tr);

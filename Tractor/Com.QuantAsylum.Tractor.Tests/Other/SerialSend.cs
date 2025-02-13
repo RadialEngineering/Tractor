@@ -2,6 +2,7 @@
 using System;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 using System.IO.Ports;
+using System.Threading;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -23,9 +24,9 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 230, DisplayText = "Baud Rate", ValidInts = new int[] { 4800, 9600, 14400, 38400, 28800, 57600, 115200 })]
         public int BaudR = 9600;
 
-        private SerialPort port;
+        private ManualResetEvent _echoReceivedEvent = new ManualResetEvent(false);
+        private string _receivedData = string.Empty;
 
-        private bool feedback = false;
         public SerialSend() : base()
         {
             Name = this.GetType().Name;
@@ -36,87 +37,106 @@ namespace Com.QuantAsylum.Tractor.Tests
         {
             tr = new TestResult(2);
             string COM = "COM" + COMPort;
+            
 
             try
             {
-                port = new SerialPort(COM, 9600);
-                port.NewLine = "\n";
-                port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                System.Threading.Thread.Sleep(20);
-                port.Open();
+                using (var port = new SerialPort(COM, BaudR))
+                {
+                    port.NewLine = "\n";
+                    port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+                    port.Open();
+
+                    // Send input selection command and wait for echo
+                    SendCommandAndWaitForEcho(port, CheckInput());
+
+                    // Send output selection command and wait for echo
+                    SendCommandAndWaitForEcho(port, CheckOutput());
+
+                    tr.Pass = true;
+                }
             }
             catch (Exception ex)
             {
-                port.Close();
-                port = new SerialPort(COM, 9600);
-                port.NewLine = "\n";
-                port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-                port.Open();
+                Console.WriteLine($"Error: {ex.Message}");
+                tr.Pass = false;
             }
-            //System.Threading.Thread.Sleep(500);
 
-            port.Write(BitConverter.GetBytes(CheckInput()), 0, 1);
 
-            //while (!feedback) { }
-            //feedback = false;
-
-            port.Write(BitConverter.GetBytes(CheckOutput()), 0, 1);
-            //while (!feedback){}
-            //feedback = false;
-
-            System.Threading.Thread.Sleep(20);
-            port.Close();
-            tr.Pass = true;
 
         }
         // returns corresponding serial output char for selected input to send to ATPI
-        char CheckInput()
+        byte CheckInput()
         {
             switch (InConnectorSelect)
             {
                 case "TRS1":
-                    return '1';
+                    return 0x01;
                 case "TRS2":
-                    return '2';
+                    return 0x02;
                 case "RCA1":
-                    return '3';
+                    return 0x03;
                 case "RCA2":
-                    return '4';
+                    return 0x04;
                 case "3.5mm":
-                    return '5';
+                    return 0x05;
                 case "XLR":
-                    return '6';
+                    return 0x06;
             }
-            return '0';
+            return 0x00;
         }
         // returns corresponding serial output char for selected output to send to ATPI
-        char CheckOutput()
+        byte CheckOutput()
         {
             switch (OutConnectorSelect)
             {
                 case "TRS":
-                    return '1';
+                    return 0x01;
                 case "RCA":
-                    return '2';
+                    return 0x02;
                 case "3.5mm":
-                    return '3';
+                    return 0x03;
                 case "XLR1":
-                    return '4';
+                    return 0x04;
                 case "XLR2":
-                    return '5';
+                    return 0x05;
             }
-            return '0';
+            return 0x00;
         }
+
+        private void SendCommandAndWaitForEcho(SerialPort port, byte command)
+        {
+            _echoReceivedEvent.Reset();
+            _receivedData = string.Empty;
+
+            port.Write(new byte[] { command }, 0, 1);
+
+            if (!_echoReceivedEvent.WaitOne(2000)) // Wait for up to 2 seconds for the echo
+            {
+                throw new TimeoutException("No echo received from the slave device.");
+            }
+
+            if (_receivedData != command.ToString())
+            {
+                throw new InvalidOperationException("Received echo does not match the sent command.");
+            }
+        }
+
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
-            sp.ReadTimeout = 2000;
-            //sp.NewLine = "\n";
-            //string indata = sp.ReadLine();
-            string indata = sp.ReadExisting();
-            Console.WriteLine("Data Received:");
-            Console.Write(indata);
-            //feedback = true;
+            try
+            {
+                sp.ReadTimeout = 2000;
+                _receivedData = sp.ReadExisting();
+                _echoReceivedEvent.Set();
+                // write received data to console
+                Console.WriteLine($"Received data: {_receivedData}");
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("Read timeout occurred.");
+            }
         }
         public override string GetTestDescription()
         {
