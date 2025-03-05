@@ -670,7 +670,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             retVal = false;
                         }
                     }
-                    else if (f[i].GetValue(ObjectToEdit) is string)
+                    else if (f[i].GetValue(ObjectToEdit) is string stringValue)
                     {
                         bool valueOk = true;
                         string errMsg = "";
@@ -690,7 +690,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         {
                             Form1.AppSettings.TestList.ForEach(test =>
                             {
-                                if (test.Name == Tlp.GetControlFromPosition(1, i).Text)
+                                if (test.Name == Tlp.GetControlFromPosition(1, i).Text && test.Name != stringValue)
                                 {
                                     valueOk = false;
                                     errMsg = "A test with this name already exists. Please choose a different name.";

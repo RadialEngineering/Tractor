@@ -38,7 +38,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         //[ObjectEditorAttribute(Index = 230, DisplayText = "Min Gain Differential to Pass (dB)", MinValue = -150, MaxValue = 100)]
         //public float MinimumPassGain = -10.5f;
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Max Gain Differential to Pass (dB)", MinValue = -150, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Max Gain Differential to Pass (dB)", MinValue = -150, MaxValue = 100)]
         public float MaximumPassGain = 3;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
@@ -98,7 +98,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestLimits()
         {
-            return string.Format("{0:N1}...{1:N1} dB", MinimumPassGain, MaximumPassGain);
+            return string.Format("{0:N1}...{1:N1} dB", MaximumPassGain);
         }
 
         public override string GetTestDescription()
