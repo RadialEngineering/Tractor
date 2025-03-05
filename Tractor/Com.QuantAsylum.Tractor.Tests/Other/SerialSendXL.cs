@@ -19,7 +19,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 220, DisplayText = "Input Mode", MaxLength = 128, IsSerial = 5)]
         public string InputModeSelect = "Balanced";
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Input Mode", MaxLength = 128, IsSerial = 6)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Output Mode", MaxLength = 128, IsSerial = 6)]
         public string OutputModeSelect = "Balanced";
 
         [ObjectEditorAttribute(Index = 240, DisplayText = "COM Port")]      // Declaring int creates an editable textbox

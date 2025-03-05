@@ -28,6 +28,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
         public bool FileNameCanBeEmpty = false;
 
+        public bool IsTestName { get; set; } = false;
+
         public int IsSerial { get; set; } = 0; // 0 for no serial, 1 for in, 2 for out
 
         public bool IsDataField {  get; set; } = false;
@@ -683,6 +685,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                                     errMsg = "File does not exist";
                                 }
                             }
+                        }
+                        else if (f[i].GetCustomAttribute<ObjectEditorAttribute>().IsTestName)
+                        {
+                            Form1.AppSettings.TestList.ForEach(test =>
+                            {
+                                if (test.Name == Tlp.GetControlFromPosition(1, i).Text)
+                                {
+                                    valueOk = false;
+                                    errMsg = "A test with this name already exists. Please choose a different name.";
+                                }
+                            });
                         }
 
                         if (valueOk)

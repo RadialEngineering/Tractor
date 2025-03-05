@@ -26,6 +26,7 @@ namespace Tractor
         internal static Form1 This;
 
         TestManager Tm;
+
         bool AppSettingsDirty = false;
 
         static internal string SettingsFile = "";  

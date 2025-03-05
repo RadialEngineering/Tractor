@@ -35,11 +35,11 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         //[ObjectEditorAttribute(Index = 220, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
         //public float ExternalAnalyzerInputGain = 0;
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Min Gain Differential to Pass (dB)", MinValue = -150, MaxValue = 100)]
-        public float MinimumPassGain = -10.5f;
+        //[ObjectEditorAttribute(Index = 230, DisplayText = "Min Gain Differential to Pass (dB)", MinValue = -150, MaxValue = 100)]
+        //public float MinimumPassGain = -10.5f;
 
         [ObjectEditorAttribute(Index = 240, DisplayText = "Max Gain Differential to Pass (dB)", MinValue = -150, MaxValue = 100, MustBeGreaterThanIndex = 230)]
-        public float MaximumPassGain = -9.5f;
+        public float MaximumPassGain = 3;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
         public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
@@ -77,8 +77,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             {
                 ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
                 ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
-                tr.Value[0] = tr.Value[1] - tr.Value[0];
-                if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
+                tr.Value[0] = Math.Abs(tr.Value[1] - tr.Value[0]);
+                if (tr.Value[0] > MaximumPassGain)
                 {
                     passLeft = false;
                     break;

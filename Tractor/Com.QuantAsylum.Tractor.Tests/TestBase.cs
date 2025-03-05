@@ -131,7 +131,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// Returns the user-assigned name for the test. This name must be unique among
         /// all the tests
         /// </summary>
-        [ObjectEditorAttribute(Index = 3, DisplayText = "Test Name")]
+        [ObjectEditorAttribute(Index = 3, DisplayText = "Test Name", IsTestName = true)]
         public string Name = "Placeholder";
 
         /// <summary>

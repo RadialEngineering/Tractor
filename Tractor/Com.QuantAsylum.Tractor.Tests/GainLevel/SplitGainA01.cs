@@ -21,7 +21,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         //public float ExternalAnalyzerInputGain = 0;
 
         //add radio button for left or right channel
-        [ObjectEditorAttribute(Index = 104, DisplayText = "Measure Channel", IsRadio = true)]
+        [ObjectEditorAttribute(Index = 104, DisplayText = "Generator Channel", IsRadio = true)]
         public string Channel = "Left";
 
         [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Gain to Pass (dB)", MinValue = -150, MaxValue = 100)]
