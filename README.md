@@ -13,6 +13,10 @@ measurements:
 
 # Changelog
 
+## 1.323
+* Added duplicate test name check
+* Minor typo edits
+
 ## 1.322
 * Improved Serial port implementation to reduce crashes
 * added retries to serial com test
