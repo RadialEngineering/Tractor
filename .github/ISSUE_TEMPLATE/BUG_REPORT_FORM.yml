@@ -11,18 +11,17 @@ body:
     id: what-happened
     attributes:
       label: Describe the bug
-      description: Give a clear and concise description of what the bug is.
+      description: Give a clear and concise description of what the bug is. Paste screenshots if that helps.
       placeholder: Tell us what you happened.
-      value: "A bug happened!"
+      #value: "A bug happened!"
     validations:
       required: true
   - type: textarea
     id: reproduce
     attributes:
       label: Steps to Reproduce
-      description: Steps to reproducs the behaviour.
-      placeholder: Tell us how to reproduce
-      value: 
+      description: Steps to reproducs the behaviour. Paste screenshots if that helps.
+      placeholder:
         1. Go to '...'
         2. Click on '....'
         3. Scroll down to '....'
