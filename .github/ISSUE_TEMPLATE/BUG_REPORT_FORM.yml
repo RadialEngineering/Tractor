@@ -16,6 +16,19 @@ body:
       value: "A bug happened!"
     validations:
       required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproducs the behaviour:
+      placeholder: Tell us how to reproduce
+      value: 
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
