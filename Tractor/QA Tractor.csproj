@@ -162,6 +162,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Distortion\ThdNA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA03.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainLRLimits.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSelectA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\SplitGainA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\SumGainA01.cs" />
