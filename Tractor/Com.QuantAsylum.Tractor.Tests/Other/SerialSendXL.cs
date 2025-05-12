@@ -22,8 +22,8 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 230, DisplayText = "Output Mode", MaxLength = 128, IsSerial = 6)]
         public string OutputModeSelect = "Balanced";
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Phantom Power", MaxLength = 128, IsSerial = 3)]
-        public string PhantomPower = "OFF";
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Phantom Power Enabled", MaxLength = 128, IsSerial = 3)]
+        public bool PhantomPowerEnabled = false;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "COM Port")]      // Declaring int creates an editable textbox
         public int COMPort = 7;
@@ -340,16 +340,9 @@ namespace Com.QuantAsylum.Tractor.Tests
             return "0";
         }
 
-        string CheckPhantom()                     // returns corresponding serial command for turning off/on phantom power relay
+        string CheckPhantom()
         {
-            switch (PhantomPower)
-            {
-                case "OFF":
-                    return "phantom_off";
-                case "ON":
-                    return "phantom_on";
-            }
-            return "0";
+            return PhantomPowerEnabled ? "phantom_on" : "phantom_off";
         }
 
         int CheckBaudRate()     // Return baud rate as integer depending on dropdown menu selection
