@@ -208,7 +208,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             return "3";
         }
 
-        string CheckInput()                     // returns corresponding serial command for selecting ATPI XL output
+        string CheckInput()                     // returns corresponding serial command for selecting ATPI XL input
         {
             switch (InConnectorSelect)
             {
