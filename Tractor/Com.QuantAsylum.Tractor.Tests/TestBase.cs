@@ -94,6 +94,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(LRBalanceA01))]
     [System.Xml.Serialization.XmlInclude(typeof(PhaseTest180A01))]
     [System.Xml.Serialization.XmlInclude(typeof(GainLRLimitsA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(KL8MIDI))]
 
     //
     // Naming Convention for classes:
@@ -247,6 +248,11 @@ namespace Com.QuantAsylum.Tractor.Tests
     }
 
     public class PhaseTestBase : TestBase
+    {
+
+    }
+
+    public class MIDITestBase : TestBase
     {
 
     }
