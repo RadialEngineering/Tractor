@@ -22,7 +22,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 230, DisplayText = "Output Mode", MaxLength = 128, IsSerial = 6)]
         public string OutputModeSelect = "Balanced";
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Phantom Power Enabled", MaxLength = 128, IsSerial = 3)]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Phantom Power Enabled", MaxLength = 128)]
         public bool PhantomPowerEnabled = false;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "COM Port")]      // Declaring int creates an editable textbox
