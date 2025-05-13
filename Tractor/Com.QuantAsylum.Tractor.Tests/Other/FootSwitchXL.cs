@@ -10,13 +10,13 @@ namespace Com.QuantAsylum.Tractor.Tests
     [Serializable]                                                           // Dropdown menus for inputs and outputs
     public class FootSwitchXL : UiTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "FootSwitch - A or B", MaxLength = 128, IsSerial = 3)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "FootSwitch - A or B", MaxLength = 128, IsSerial = 8)]
         public string fs_a_b = "A";
 
-        [ObjectEditorAttribute(Index = 210, DisplayText = "Footswitch enabled", MaxLength = 128, IsSerial = 4)]
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Footswitch enabled", MaxLength = 128)]
         public bool fs = false;
 
-        [ObjectEditorAttribute(Index = 220, DisplayText = "Footswitch - Mute", MaxLength = 128, IsSerial = 5)]
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Mute Footswitch enabled", MaxLength = 128)]
         public bool fs_mute = false;
 
         [ObjectEditorAttribute(Index = 230, DisplayText = "COM Port")]      // Declaring int creates an editable textbox
