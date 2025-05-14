@@ -74,6 +74,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(SerialSend))]
     [System.Xml.Serialization.XmlInclude(typeof(MidiSendXL))]
     [System.Xml.Serialization.XmlInclude(typeof(SerialSendXL))]
+    [System.Xml.Serialization.XmlInclude(typeof(FootSwitchXL))]
     [System.Xml.Serialization.XmlInclude(typeof(ImpedanceA03))]
     [System.Xml.Serialization.XmlInclude(typeof(PowerA14))]
     [System.Xml.Serialization.XmlInclude(typeof(EfficiencyA07))]
@@ -91,8 +92,10 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(SumGainA01))]
     [System.Xml.Serialization.XmlInclude(typeof(SplitGainA01))]
     [System.Xml.Serialization.XmlInclude(typeof(GainSelectA01))]
-    [System.Xml.Serialization.XmlInclude(typeof(LRBalanceA01))] 
+    [System.Xml.Serialization.XmlInclude(typeof(LRBalanceA01))]
     [System.Xml.Serialization.XmlInclude(typeof(PhaseTest180A01))]
+    [System.Xml.Serialization.XmlInclude(typeof(GainLRLimitsA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(KL8MIDI))]
 
     //
     // Naming Convention for classes:
@@ -246,6 +249,11 @@ namespace Com.QuantAsylum.Tractor.Tests
     }
 
     public class PhaseTestBase : TestBase
+    {
+
+    }
+
+    public class MIDITestBase : TestBase
     {
 
     }
