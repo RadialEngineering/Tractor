@@ -22,10 +22,13 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 230, DisplayText = "Output Mode", MaxLength = 128, IsSerial = 6)]
         public string OutputModeSelect = "Balanced";
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "COM Port")]      // Declaring int creates an editable textbox
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Phantom Power Enabled", MaxLength = 128)]
+        public bool PhantomPowerEnabled = false;
+
+        [ObjectEditorAttribute(Index = 250, DisplayText = "COM Port")]      // Declaring int creates an editable textbox
         public int COMPort = 7;
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Baud Rate", MaxLength = 128, IsSerial = 7)]
+        [ObjectEditorAttribute(Index = 260, DisplayText = "Baud Rate", MaxLength = 128, IsSerial = 7)]
         public string BaudR = "9600";
 
         private SerialPort port;                // Declare serial port
@@ -77,6 +80,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             port.WriteLine(CheckOutput());              // Enable output relays
             port.WriteLine(CheckInputMode());           // Enable input mode relays
             port.WriteLine(CheckOutputMode());          // Enable output mode relays
+            port.WriteLine(CheckPhantom());             // Phantom relay
         }
 
         private bool InitializeSerialPort(string com, int baud, out SerialPort port)
@@ -334,6 +338,11 @@ namespace Com.QuantAsylum.Tractor.Tests
                     return "ostereo2";
             }
             return "0";
+        }
+
+        string CheckPhantom()
+        {
+            return PhantomPowerEnabled ? "phantom_on" : "phantom_off";
         }
 
         int CheckBaudRate()     // Return baud rate as integer depending on dropdown menu selection

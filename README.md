@@ -13,6 +13,14 @@ measurements:
 
 # Changelog
 
+## 1.400
+added several new tests.
+
+* FootswitchXL - for controlling footswitch circuitry on ATPIXL
+* GainLRLimits - set separate gain limits for Left and Right channels instead of just one for both.
+* KL8MIDI - Opens MIDI input and output device in loopback to test data.
+* SerialSendXL - updated to include phantom power control
+
 ## 1.323
 * Added duplicate test name check
 * Minor typo edits
