@@ -13,6 +13,9 @@ measurements:
 
 # Changelog
 
+## 1.401
+* Added settings file loading capabilities to the GainA01 test
+
 ## 1.400
 added several new tests.
 
