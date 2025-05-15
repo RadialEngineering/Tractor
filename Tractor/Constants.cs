@@ -10,7 +10,7 @@ namespace Tractor
     static class Constants 
     {
         public static string TitleBarText = "QA TRACTOR RadialEng";
-        public static readonly double Version = 1.400;
+        public static readonly double Version = 1.401;
         public static string VersionSuffix = "";
 
         public static double RequiredWebserviceVersion = 0.5;
@@ -30,5 +30,6 @@ namespace Tractor
         static public string LogFile = Path.Combine(DataFilePath, "Tractor_Log.txt");
         static public string TmpLogFile = Path.Combine(DataFilePath, "Tractor_Log_tmp.txt");
         static public string AutoDocFile = Path.Combine(DataFilePath, "Tractor_Help.md");
+        static public string QA401Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "QuantAsylum", "QA401");
     }
 }

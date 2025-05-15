@@ -42,6 +42,11 @@ namespace Com.QuantAsylum.Hardware
             Qa401.SetToDefault("");
         }
 
+        public bool SetToDefaults(string title)
+        {
+            return Qa401.SetToDefault(title);
+        }
+
         public double GetVersion()
         {
             return Qa401.GetVersion();

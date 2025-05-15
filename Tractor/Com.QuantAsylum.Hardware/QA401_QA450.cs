@@ -234,6 +234,11 @@ namespace Com.QuantAsylum.Hardware
             Qa450.SetToDefaults();
         }
 
+        public bool SetToDefaults(string title)
+        {
+            return true;
+        }
+
         public bool IsConnected()
         {
             if (Qa401.IsConnected() && Qa450.IsConnected())

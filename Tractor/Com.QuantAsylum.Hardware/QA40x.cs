@@ -135,6 +135,11 @@ namespace Com.QuantAsylum.Hardware
 
         }
 
+        public bool SetToDefaults(string title)
+        {
+            return true;
+        }
+
         public Bitmap GetBitmap()
         {
             WebClient client = new WebClient();

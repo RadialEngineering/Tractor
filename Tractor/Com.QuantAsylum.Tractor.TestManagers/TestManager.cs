@@ -43,5 +43,10 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         {
             ((IInstrument)TestClass).SetToDefaults();
         }
+
+        public bool SetToDefaults(string fileName)
+        {
+            return ((IInstrument)TestClass).SetToDefaults(fileName);
+        }
     }
 }
