@@ -12,6 +12,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
     interface IInstrument
     {
         void SetToDefaults();
+        bool SetToDefaults(string fileName);
         bool IsRunning();
         void LaunchApplication();
         bool ConnectToDevice(out string result);

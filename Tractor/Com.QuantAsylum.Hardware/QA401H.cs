@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Tractor.Com.QuantAsylum.Hardware;
 
 namespace Com.QuantAsylum.Hardware
 {
@@ -51,8 +52,13 @@ namespace Com.QuantAsylum.Hardware
             return 0;
         }
 
+        public bool SetToDefaults(string title)
+        {
+            return true;
+        }
 
-            public void AudioAnalyzerSetTitle(string s)
+
+        public void AudioAnalyzerSetTitle(string s)
         {
             return;
         }

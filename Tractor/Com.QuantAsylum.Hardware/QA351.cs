@@ -78,6 +78,11 @@ namespace Tractor.Com.QuantAsylum.Hardware
 
         }
 
+        public bool SetToDefaults(string title)
+        {
+            return true;
+        }
+
         public float GetVoltage(int channel)
         {
             if (channel < 0 || channel > 1)

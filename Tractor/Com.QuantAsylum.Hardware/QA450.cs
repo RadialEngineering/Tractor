@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Web.Script.Serialization;
+using Tractor.Com.QuantAsylum.Hardware;
 
 namespace Com.QuantAsylum.Hardware
 {
@@ -27,6 +28,11 @@ namespace Com.QuantAsylum.Hardware
             {
                 BaseAddress = new Uri(RootUrl)
             };
+        }
+
+        public bool SetToDefaults(string title)
+        {
+            return true;
         }
 
         public bool ConnectToDevice(out string result)

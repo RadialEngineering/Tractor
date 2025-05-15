@@ -30,5 +30,6 @@ namespace Tractor
         static public string LogFile = Path.Combine(DataFilePath, "Tractor_Log.txt");
         static public string TmpLogFile = Path.Combine(DataFilePath, "Tractor_Log_tmp.txt");
         static public string AutoDocFile = Path.Combine(DataFilePath, "Tractor_Help.md");
+        static public string QA401Path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "QuantAsylum", "QA401");
     }
 }
