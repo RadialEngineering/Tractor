@@ -166,6 +166,10 @@ namespace Com.QuantAsylum.Hardware
             Qa401.SetToDefaults();
             Qa351.SetToDefaults();
         }
+        public bool SetToDefaults(string title)
+        {
+            return true;
+        }
 
         public bool IsConnected()
         {
