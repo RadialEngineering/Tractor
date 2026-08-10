@@ -2,6 +2,7 @@
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
         public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
+        [ObjectEditorAttribute(Index = 260, DisplayText = "Settings Filename", MaxLength = 512)]
+        public string settingsFilename = "";
+
         public ThdNA01() : base()
         {
             Name = this.GetType().Name;
@@ -45,7 +49,41 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetToDefaults();
+            if (string.IsNullOrEmpty(settingsFilename))
+            {
+                Tm.SetToDefaults();
+            }
+            else
+            {
+                if (!System.IO.File.Exists(settingsFilename))
+                {
+                    tr.Pass = false;
+                    Console.WriteLine($"Settings file '{settingsFilename}' does not exist.");
+                    return;
+                }
+
+                // copy the settings file to the QA401 path
+                string qa401Path = Constants.QA401Path;
+                string settingsFileName = Path.GetFileName(settingsFilename);
+                string destFileName = Path.Combine(qa401Path, settingsFileName);
+
+                try
+                {
+                    // Copy the settings file to the QA401 path
+                    File.Copy(settingsFilename, destFileName, true);
+                    Console.WriteLine($"Settings file '{settingsFilename}' copied to '{destFileName}'.");
+                }
+                catch (Exception ex)
+                {
+                    tr.Pass = false;
+                    Console.WriteLine($"Error copying settings file: {ex.Message}");
+                    tr.OperatorMessage = $"Error copying settings file: {ex.Message}";
+                    return;
+                }
+
+                Tm.SetToDefaults(settingsFilename);
+            }
+
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
